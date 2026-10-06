@@ -6,12 +6,66 @@
   <link rel="icon" type="image/x-icon" href="Khaeoz.png">
   <style>
     body {
-      font-family: Microsoft Yahei, sans-serif;
+      font-family: "Microsoft YaHei", "微软雅黑", STXihei, "华文细黑", sans-serif;
       margin: 0;
       padding: 0;
       background: #f9f9f9;
       color: #333;
     }
+
+    /* 1. 悬停文本的基础样式 */
+        .tooltip-text {
+            position: relative;          /* 用于相对定位提示框 */
+            display: inline-block;
+            color: #0066cc;              /* 文字颜色 */
+            cursor: pointer;             /* 鼠标变为手势 */
+        }
+        .tooltip-text:hover {
+          text-decoration: underline;
+        }
+
+        /* 2. 隐藏的提示文本框（默认不可见） */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            width: 800px;                 /* 提示框宽度 */
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;           /* 圆角 */
+            font-size: 13px;
+            
+            /* 绝对定位在文本上方 */
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;                 /* 显示在文本上方 */
+            left: 50%;
+            transform: translateX(-50%);  /* 居中对齐 */
+
+            /* 渐变过渡动画效果 */
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* 阴影 */
+        }
+
+        /* 3. 提示框底部的小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;                    /* 位于提示框底部 */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 鼠标悬停时显示提示框 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
     header {
       background: #2c3e50;
       padding: 15px 20px;
@@ -99,8 +153,15 @@
     <section id="about">
       <h2>哇！快看，这里是哪儿？</h2>
       <p>嘶——似乎是书库啊……等等，你是谁？</p>
-      <p>
-        ==欢迎来到混沌理论JCOB的藏书室。这里有书，和书，以及书。在停留的期间内，您可以随意翻阅这里的书籍。==</p>
+      <p > 
+        <span class="tooltip-text" style = "color: #a5000e">
+          ==锟斤拷锟斤拷锟斤拷锟斤拷JCOB锟斤拷锟斤拷. 锟斤拷锟斤拷, 锟斤拷, 锟斤拷. 锟斤拷锟斤拷锟斤拷锟斤拷, 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷. ==
+        <span class="tooltip-box">看来是编码出问题了。你连忙翻开了对方体内的文件，用正确的编码形式打了开来。<br>
+          原本的文本是这样的：“欢迎来到混沌理论JCOB的藏书室。这里有书, 和书, 和书. 在您停留的期间内, 您可以随意翻阅这里的书籍.”<br>
+          做这个的人到底有多闲啊？</span>
+        </span>
+      </p>
+        <!-- 欢迎来到混沌理论JCOB的藏书室。这里有书, 和书, 和书. 在您停留的期间内, 您可以随意翻阅这里的书籍. -->
     </section>
 
     <section id="books">
@@ -130,7 +191,15 @@
     </section>
 
     <section id="contact">
-      <h2>==需要联系书库的主人吗？您可以试试以下方法。==</h2>
+      <h2><span class="tooltip-text" style = "color: #a5000e">
+        ==锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷? 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷.==
+        <span class="tooltip-box" style = "width:300px"><p style = "font-weight: normal">
+          你又一次用正确的编码打开了对话文本。<br>
+          “需要联系书库的主人吗? 您可以去试试以下方法.”<br>
+          说实话，玩过一次的笑话就不好玩了。</p>
+        </span>
+      </span></h2>
+      需要联系书库的主人吗? 您可以去试试以下方法.
       <p>感觉不会有有用……？</p>
       <p>邮件：mikecraft666.xue@gmail.com</p>
       <p>全球最大的同性交友网站：<a href="https://github.com/Epors-Usr" target="_blank">https://github.com/Epors-Usr</a></p>
