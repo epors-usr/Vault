@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        双容器布局示例
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+            <!-- 一级标题 1 -->
+            <li class="index-title-l1">
+                <a href="#">第一章 概述与背景</a>
+                <!-- 二级标题（含缩进） -->
+                <ul class="index-sub-list">
+                    <li class="index-title-l2"><a href="#">1.1 项目背景</a></li>
+                    <li class="index-title-l2"><a href="#">1.2 设计目标</a></li>
+                </ul>
+            </li>
+
+            <!-- 一级标题 2 -->
+            <li class="index-title-l1">
+                <a href="#">第二章 核心架构设计</a>
+                <ul class="index-sub-list">
+                    <li class="index-title-l2"><a href="#">2.1 前端布局结构</a></li>
+                    <li class="index-title-l2"><a href="#">2.2 响应式与固定定位</a></li>
+                    <li class="index-title-l2"><a href="#">2.3 层级与层叠上下文</a></li>
+                </ul>
+            </li>
+
+            <!-- 一级标题 3 -->
+            <li class="index-title-l1">
+                <a href="#">第三章 详细功能实现</a>
+                <ul class="index-sub-list">
+                    <li class="index-title-l2"><a href="#">3.1 页面排版规范</a></li>
+                    <li class="index-title-l2"><a href="#">3.2 字体与颜色设置</a></li>
+                    <li class="index-title-l2"><a href="#">3.3 分页导航组件</a></li>
+                </ul>
+            </li>
+
+            <!-- 一级标题 4 -->
+            <li class="index-title-l1">
+                <a href="#">第四章 性能与优化</a>
+                <ul class="index-sub-list">
+                    <li class="index-title-l2"><a href="#">4.1 CSS渲染优化</a></li>
+                    <li class="index-title-l2"><a href="#">4.2 滚动体验改善</a></li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+        <h1>文章标题：关于现代 Web 界面布局的深度解析</h1>
+        
+        <p>这是第一段占位文字。微软雅黑字体（Microsoft YaHei）在现代浏览器和操作系统中具有极佳的清晰度与可读性，非常适合用于展示长文本内容和文章大纲。</p>
+        
+        <p>这是第二段占位文字。页面采用了响应式与固定定位结合的设计。左侧表层容器通过 CSS 的 <code>position: fixed</code> 实现了不随屏幕滚动的效果，而其内部如果内容超出了定义的高度（上下 30% 至 70% 之间），则可以通过设置 <code>overflow-y: auto</code> 独立滚动。</p>
+
+        <p>这是第三段占位文字。底层容器占据屏幕横向 30% 到 80% 的区域，通过常规的文档流向下延伸。当读者向下滚动页面时，主体文章会顺畅滚动，而左侧的索引导航栏始终固定在窗口的特定位置，方便随时跳转或查阅大纲。</p>
+
+        <p>这是第四段占位文字。文字排版在网页设计中至关重要，合理的行高（line-height）、字间距以及段落间距能够极大地提升用户的阅读体验。在浅色背景下选用暗灰色字体，比纯黑色字体更不容易让人感到视觉疲劳。</p>
+
+        <p>这是第五段占位文字。你可以继续在此处添加更多的内容。为了演示长页面的滚动效果，这里放置了大量的占位段落。你可以试着用鼠标滚轮向下滑动，观察左侧索引框与中间主体文字的互动方式。</p>
+
+        <p>这是第六段占位文字。继续向下阅读，底层容器的最下方准备了两个分页链接“上一页”和“下一页”，用于在多页长图文之间进行切换导航。</p>
+
+        <p>这是第七段占位文字。技术的不断演进使得 CSS 布局变得越来越丰富，从传统的浮动布局到弹性盒子（Flexbox），再到网格布局（Grid）以及固定/绝对定位，开发者可以轻松实现各种复杂的叠层与交互界面。</p>
+
+        <p>这是第八段占位文字。这是主体内容的最后一段文字。下方即为“上一页”与“下一页”的按钮区域。</p>
+
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+            <a href="#">&laquo; 上一页</a>
+            <a href="#">下一页 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>

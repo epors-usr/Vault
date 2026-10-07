@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="zh-CN"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>	当你迷茫时，请在世界的尽头唱响这首歌    </title>    <link rel="icon" type="image/x-icon" href="Khaeoz.png">    <style>        /* 全局样式与字体设置 */        * {            box-sizing: border-box;            margin: 0;            padding: 0;        }        header {            background: #2c3e50;            padding: 15px 20px;            color: white;            display: flex;            justify-content: space-between;            align-items: center;        }        header h1 {            margin: 0;            font-size: 1.5em;        }        header img {            width: 10%;          /* responsive percentage */            max-width: 200px;    /* upper limit */            min-width: 100px;    /* lower limit */            height: auto;        /* keep aspect ratio */            border-radius: 50%;  /* round avatar */            margin-top: 10px;        }        nav a {            color: white;            text-decoration: none;        }        nav a:hover{            text-decoration: underline;        }        body {            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;            background-color: #f4f6f9;            color: #333;            line-height: 1.8;        }        /* ----------------------------------------------------           1. 底层主内容容器 (Main Container)           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)           ---------------------------------------------------- */        .main-container {            width: 55%;            margin-left: 30%;            margin-top: 40px;            margin-bottom: 40px;            background-color: #ffffff;            border-radius: 8px;            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);            padding: 40px;            position: relative;            z-index: 1; /* 保证在底层 */        }        .main-container h1 {            font-size: 24px;            margin-bottom: 20px;            color: #222;        }        .main-container p {            margin-bottom: 16px;            text-align: justify;        }        /* 底部翻页按钮样式 */        .pagination {            display: flex;            justify-content: space-between;            margin-top: 40px;            padding-top: 20px;            border-top: 1px solid #eee;        }        .pagination a {            display: inline-block;            padding: 10px 20px;            background-color: #f0f2f5;            color: #0066cc;            text-decoration: none;            border-radius: 4px;            font-weight: bold;            transition: background-color 0.2s, color 0.2s;        }        .pagination a:hover {            background-color: #0066cc;            color: #ffffff;        }        /* ----------------------------------------------------           2. 表层固定索引容器 (Fixed Overlay Index Container)           位置：左右 20% ~ 35% (left: 20%, width: 15%)                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)           ---------------------------------------------------- */        .sidebar-container {            position: fixed;            top: 25%;            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */            left: 12%;            width: 20%;  /* 即 35% - 20% = 15% */                        background-color: #fafafa;            border: 1px solid #e8e8e8;            border-radius: 8px;            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);            padding: 20px 15px;                        overflow-y: auto; /* 允许内部索引内容滚动 */            z-index: 10;     /* 保证处于表层 */        }        .sidebar-container h3 {            font-size: 16px;            margin-bottom: 12px;            color: #444;            padding-bottom: 8px;            border-bottom: 2px solid #0066cc;        }        .sidebar-container ul {            list-style: none;        }        /* 索引基础链接通用样式 */        .sidebar-container a {            color: #555;            text-decoration: none;            display: block;            border-radius: 4px;            transition: all 0.2s;            line-height: 1.4;        }        .sidebar-container a:hover {            background-color: #e6f7ff;            color: #0066cc;        }        /* 大标题（一级索引）样式 */        .index-title-l1 {            font-size: 14px;            font-weight: bold;            margin-top: 10px;            margin-bottom: 4px;        }        .index-title-l1 > a {            padding: 6px 8px;            color: #222;        }        /* 小标题（二级索引）列表与缩进设置 */        .index-sub-list {            padding-left: 16px; /* 控制小标题整体向右缩进 */            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */            margin-left: 8px;            margin-bottom: 8px;        }        .index-title-l2 {            font-size: 13px;            margin-bottom: 2px;        }        .index-title-l2 > a {            padding: 4px 6px;            color: #666;        }    </style></head><body>    <header>        <div class="profile"><nav>        <!-- Replace profile.jpg with your own image or an online link -->        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>        </nav></div>    </header>    <!-- 表层固定索引容器 -->    <aside class="sidebar-container">        <h3>目录索引</h3>        <ul>	<li class="index-title-l1">
+	<a href = "preq_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_1.html">序奏 永夜与月之光辉</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_1_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_1_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_1_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_1_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_1_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_1_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_1_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_1_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_1_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_1_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_1_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_1_11.html>十二</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_2.html">呈示 星空之下的世界</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_2_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_2_3.html>四【存在待更新内容】</a></li>
+		<li class="index-title-l2"><a href=preq_2_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_2_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_2_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_2_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_2_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_2_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_2_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_2_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_2_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_2_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_24.html>二十五【有可能要改】</a></li>
+		<li class="index-title-l2"><a href=preq_2_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_28.html>二十九</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_3.html">发展 蔚蓝倒映出繁星</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_3_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_3_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_3_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_3_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_3_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_3_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_3_6.html>七【战斗场面即使我都已经做过减负了还是憋不出来，暂时跳过吧】</a></li>
+		<li class="index-title-l2"><a href=preq_3_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_3_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_3_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_3_10.html>十一</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_4.html">后记</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_4_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_4_1.html>二</a></li>
+	</ul>
+	</li>
+
+        </ul>    </aside>    <!-- 底层主内容容器 -->    <main class="main-container">	<h1>四</h1>
+	<p>谬萨是在第二天中午时分醒来的。醒来时，他发现自己已经躺在了自己的床上。他不确定回忆里的那一切，是梦，还是真实发生的。</p>	<p>当谬萨整理好自己的情绪，来到研究室时，已经是下午了。“抱歉啊，来晚了。”</p>	<p>看着逐渐走过来的对方，薇莉塔脸上泛起了一丝红色。“没……没事。毕竟把你灌醉的罪魁祸首是我。”她把头转了过去。</p>	<p></p>	<p>然后，又过去了两三周。自那天之后，谬萨每天都把自己扔进了研究室之中，完成着使骸核心的解析工作。起初，薇莉塔还能帮上些忙，但她对这一切的知识储备实在有限——毕竟四年着实不长，更何况对方仅仅只能在研究之余辅导她——于是，在她手头上的工作完成了之后，她就只能坐在对方身旁，静静地看着对方工作。</p>	<p>其实，谬萨是有给她放假的，但少女觉得把他丢下一个人出去玩不太好——而且她也没有什么想去的地方——最后便在对方的指导下帮他写起了论文。</p>	<p>其实不止那一个原因。她还想多在谬萨身旁待一会儿。既然是喜欢之人，想在他身旁多待一会儿，也是无可厚非的吧。至少，她是这么想的。</p>	<p>然后，又过了几周，就连帮助谬萨撰写论文也做不到了。因为那里面涉及的知识早已超出了少女的知识储备。所以，面对谬萨在研究室里漫无止境的叹息声，薇莉塔也无能为力。</p>	<p>如果就连天才也做不到的话……不，这么说起来，谬萨从没有自称天才过。这些名号，全都是从旁人之口中听得的。</p>	<p>由于先前两个半月的连续外出，一段时间内由反抗军委托给他们两人的工作都已经完成了。再加上最近这片星域都没有使骸出现的报告或征兆，两人便也没有出击的理由。因此，留在研究室的每一天便成为了日常。</p>	<p>雅辛缇曾多次在工作之余跑过来看望在研究室里发愁的二人。什么也不说，只是静静地看着。每次薇莉塔询问时，她都只说是路过就来看看了。但其实薇莉塔知道，对方绝对不只是路过。</p>	<p>因为她眼中似乎有着想要说出来的话。</p>	<p></p>	<p>“不行……做不到，做不到……”谬萨趴在了桌子上，狠狠地敲打着桌面。“再怎么优化模型，排除错误链接，还是没法做到一个稳定的信号连接。就连暂时性的信号连接都要纯凭运气……但如果想用深度学习来拟合一个连接算法的话，算力也远远不够，就算调用基地里的全部算力也不够……”</p>	<p>薇莉塔不知道该怎么回答好像已经快崩溃的青年，毕竟，那些已经是她听不懂的东西了。“那个，没事的。一定有办法的，不是吗？就像之前的每一次……一定会有办法的，一定会有办法的……”</p>	<p>“不行……能想到的办法我都试了，但是到最后也只能近似……误差会越来越大……”自从那天起，少女就能听懂谬萨言语中的感情了。所以，字里行间的每一份不甘，她都明白。“到最后，还是算力不足，我什么都做不到……”</p>	<p>“一定会有办法的，一定……”少女只能不断地重复着这些许似有希望又似无的话语。</p>	<p></p>	<p>模拟的天穹上闪烁着点点微弱的星光。闪耀着，闪烁着。</p>	<p>“抱歉啊，薇莉塔……又麻烦你了……”谬萨在少女的背上迷糊地说道。“又得让你背回去了……我们一个多月前是不是，有过相同的谈话？”</p>	<p>薇莉塔没有回答，只是继续向前走着。那位沉浸在过去的天才又喝醉了，但少女也无法怪罪他。当他提到自己想去喝杯酒时，少女并没有阻止他。只是，看着那摇摇欲坠的青年，她觉得自己必须默默地跟上去。</p>	<p>她和雅辛缇约好了，要在谬萨刹不住车时阻止他。她和谬萨约好了，要帮助对方完成愿望。所以，她会一直走下去，支撑着她。因为那些约定是她重要的一部分，是她的幸福的一部分。</p>	<p>谬萨抬起了头，看向了星空。那眼前的景色早已变得模糊不清，但他依然选择向天上看去。“好漂亮啊。”</p>	<p>“嗯？”</p>	<p>“星空……这么说来，我好久都没看了呢……”星点在模糊的世界中化成了光晕，铺满了整个天空。“好漂亮啊。”</p>	<p>“……或许是吧。”薇莉塔回答道。</p>	<p>“薇莉塔……我突然想起了什么……”</p>	<p>少女叹了口气。“如果是有非常非常重要的东西想对我说的话，请等酒醒了再说给我听吧。”她半开玩笑地说道。“在那之前，就让我保有一点期待嘛。”</p>	<p>“那我说了哦……”</p>	<p>“我不是说了等酒醒了之后再说吗？”</p>	<p>谬萨指向了那天空，指向了那群星。“我们现在，不是在算力密度最高的星域之一里吗？”</p>	<p>“嗯，对啊。怎么了？”星体计算机，帝皇在它的疆土中造了数百个。对于活在这个时代的人们来说，即使是才懂事的小孩，这也是常识。“毕竟……喂，你该不会……？”</p>	<p>谬萨没有回应。少女连忙转过头去，却发现他已经晕过去了。</p>	<p>“喂！别在这种时候失去意识啊！别吊着我啊……”</p>        <!-- 底部翻页按钮 -->        <nav class="pagination"><a href = "preq_3_2.html">&laquo; 上一段</a><a href = "preq_3_4.html">下一段 &raquo;</a>        </nav>    </main></body></html>
