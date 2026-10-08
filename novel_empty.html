@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-
+        /*title*/
     </title>
     <link rel="icon" type="image/x-icon" href="Khaeoz.png">
     <style>
@@ -13,6 +13,69 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
         }
 
         header {
@@ -201,13 +264,13 @@
     <aside class="sidebar-container">
         <h3>目录索引</h3>
         <ul>
-
+            <!--index-->
         </ul>
     </aside>
 
     <!-- 底层主内容容器 -->
     <main class="main-container">
-
+        <!--content-->
         <!-- 底部翻页按钮 -->
         <nav class="pagination">
             <a href="#">&laquo; 上一段</a>
