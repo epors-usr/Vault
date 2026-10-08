@@ -1,4 +1,270 @@
-<!DOCTYPE html><html lang="zh-CN"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>	当你迷茫时，请在世界的尽头唱响这首歌    </title>    <link rel="icon" type="image/x-icon" href="Khaeoz.png">    <style>        /* 全局样式与字体设置 */        * {            box-sizing: border-box;            margin: 0;            padding: 0;        }        /* 1. 悬停文本容器 */        .tooltip-text {            position: relative;            display: inline-block;            color: #000;            cursor: pointer;        }        .tooltip-text:hover {            text-decoration: underline;        }        /* 2. 提示框样式重置 */        .tooltip-text .tooltip-box {            visibility: hidden;            opacity: 0;                        /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */            width: max-content;            max-width: 300px;                         background-color: #333333;    /* 背景深色 */            color: #ffffff;               /* 文字浅色 */            text-align: left;            padding: 8px 12px;            border-radius: 6px;                        /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */            font-size: 13px !important;            line-height: 1.5 !important;            font-weight: normal !important;            font-style: normal !important;            white-space: normal;          /* 允许文本正常折行 */            /* ------------------------------------------------------------- */            position: absolute;            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */            bottom: 125%;                 /* 悬浮在文字上方 */            left: 50%;            transform: translateX(-50%);            transition: opacity 0.3s, visibility 0.3s;            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);        }        /* 3. 小三角指示器 */        .tooltip-text .tooltip-box::after {            content: "";            position: absolute;            top: 100%;            left: 50%;            margin-left: -5px;            border-width: 5px;            border-style: solid;            border-color: #333333 transparent transparent transparent;        }        /* 4. 悬停触发 */        .tooltip-text:hover .tooltip-box {            visibility: visible;            opacity: 1;        }        header {            background: #2c3e50;            padding: 15px 20px;            color: white;            display: flex;            justify-content: space-between;            align-items: center;        }        header h1 {            margin: 0;            font-size: 1.5em;        }        header img {            width: 10%;          /* responsive percentage */            max-width: 200px;    /* upper limit */            min-width: 100px;    /* lower limit */            height: auto;        /* keep aspect ratio */            border-radius: 50%;  /* round avatar */            margin-top: 10px;        }        nav a {            color: white;            text-decoration: none;        }        nav a:hover{            text-decoration: underline;        }        body {            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;            background-color: #f4f6f9;            color: #333;            line-height: 1.8;        }        /* ----------------------------------------------------           1. 底层主内容容器 (Main Container)           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)           ---------------------------------------------------- */        .main-container {            width: 55%;            margin-left: 30%;            margin-top: 40px;            margin-bottom: 40px;            background-color: #ffffff;            border-radius: 8px;            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);            padding: 40px;            position: relative;            z-index: 1; /* 保证在底层 */        }        .main-container h1 {            font-size: 24px;            margin-bottom: 20px;            color: #222;        }        .main-container p {            margin-bottom: 16px;            text-align: justify;        }        /* 底部翻页按钮样式 */        .pagination {            display: flex;            justify-content: space-between;            margin-top: 40px;            padding-top: 20px;            border-top: 1px solid #eee;        }        .pagination a {            display: inline-block;            padding: 10px 20px;            background-color: #f0f2f5;            color: #0066cc;            text-decoration: none;            border-radius: 4px;            font-weight: bold;            transition: background-color 0.2s, color 0.2s;        }        .pagination a:hover {            background-color: #0066cc;            color: #ffffff;        }        /* ----------------------------------------------------           2. 表层固定索引容器 (Fixed Overlay Index Container)           位置：左右 20% ~ 35% (left: 20%, width: 15%)                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)           ---------------------------------------------------- */        .sidebar-container {            position: fixed;            top: 25%;            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */            left: 12%;            width: 20%;  /* 即 35% - 20% = 15% */                        background-color: #fafafa;            border: 1px solid #e8e8e8;            border-radius: 8px;            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);            padding: 20px 15px;                        overflow-y: auto; /* 允许内部索引内容滚动 */            z-index: 10;     /* 保证处于表层 */        }        .sidebar-container h3 {            font-size: 16px;            margin-bottom: 12px;            color: #444;            padding-bottom: 8px;            border-bottom: 2px solid #0066cc;        }        .sidebar-container ul {            list-style: none;        }        /* 索引基础链接通用样式 */        .sidebar-container a {            color: #555;            text-decoration: none;            display: block;            border-radius: 4px;            transition: all 0.2s;            line-height: 1.4;        }        .sidebar-container a:hover {            background-color: #e6f7ff;            color: #0066cc;        }        /* 大标题（一级索引）样式 */        .index-title-l1 {            font-size: 14px;            font-weight: bold;            margin-top: 10px;            margin-bottom: 4px;        }        .index-title-l1 > a {            padding: 6px 8px;            color: #222;        }        /* 小标题（二级索引）列表与缩进设置 */        .index-sub-list {            padding-left: 16px; /* 控制小标题整体向右缩进 */            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */            margin-left: 8px;            margin-bottom: 8px;        }        .index-title-l2 {            font-size: 13px;            margin-bottom: 2px;        }        .index-title-l2 > a {            padding: 4px 6px;            color: #666;        }    </style></head><body>    <header>        <div class="profile"><nav>        <!-- Replace profile.jpg with your own image or an online link -->        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>        </nav></div>    </header>    <!-- 表层固定索引容器 -->    <aside class="sidebar-container">        <h3>目录索引</h3>        <ul>	<li class="index-title-l1">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+	当你迷茫时，请在世界的尽头唱响这首歌
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+	<li class="index-title-l1">
 	<a href = "preq_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
 	</li>
 
@@ -80,7 +346,13 @@
 	</ul>
 	</li>
 
-        </ul>    </aside>    <!-- 底层主内容容器 -->    <main class="main-container">	<h1>十一</h1>
+
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+	<h1>十一</h1>
 	<p>“所以……谬萨他才刚回到基地就把自己关到了研究室里，还给你放了一个月的假，并强制把你派遣到了分部二号这里？”女孩听完后摇了摇头。“真的是……他要迟钝到什么地步啊？怎么想都应该得出‘你更想待在他身边’的结论啊。”</p>
 	<p>“他……谬萨最近好像挺失落的，想一个人静静也正常吧？”少女尴尬地笑了笑。</p>
 	<p>海边的风是清甜的——薇莉塔也没完全理解为什么。虽然这只是她第二次真正意义上的来到海边，但她也知道在类地行星上，海水普遍应该是咸咸的才对，书里说是因为海水对大陆不断地腐蚀，导致了各种金属离子溶解在了水中……</p>
@@ -96,6 +368,63 @@
 	<p>薇莉塔又犹豫了。“那如果……我想不出来呢？”</p>
 	<p>“这样子的话……微笑就可以了哦。”</p>
 	<p><br></p>
+	<p>日落。日落。</p>
+	<p>橙色的光芒染红了天空，金色的光辉在海面上不断闪烁着。少女的一生似乎就在反复见证这样子的日落。还记得，还记得……</p>
+	<p>“让我想起来了四年前，我第一次带你出去玩的那次啊。”雅辛缇说道。</p>
+	<p>“嗯，是啊。”两人心中想的是一样的。虽说，那早就不是同一份景色，同一份天空，甚至不是同一个太阳，但两人心中的友谊未曾变过。“还记得，那天你开玩笑得说，说我其实是更想要和谬萨一起出来……”少女的脸红了。是日落的光辉，亦是少女心中的羞涩。</p>
+	<p>“现在看来，我猜的根本没有错吧？”女孩笑着回答道。</p>
+	<p>“嗯，没错。肯定没错。”她感受着温暖的海风拂过发尖，让她略微想起了从前的事。那时，他身旁同样也站着一位女孩，两人就那样看着一颗恒星向着海面……？</p>
+	<p>“真是惬意呢。”雅辛缇的话语将少女从杂乱的思绪中拉回了现实。她前面为什么会在想这些？“好希望每天都能是这样子的好天气啊。”</p>
+	<p>她和少女不一样——她不是来度假的。作为后勤部门的总部，分部二号最近在进行针对新人的培训，雅辛缇被以后勤部的优秀分队长的身份前来监督。想到这里，少女才意识到，其实雅辛缇的职位还挺高的。</p>
+	<p>“这种悠闲的时刻，就让人感觉，仿佛战争从未发生过一样。”</p>
+	<p>薇莉塔……并不是很清楚这是种什么感觉。即使故乡从未收到过来自帝国的侵扰，不断紧逼着众人的黑雾也让少女未曾有过真正喘息的机会。“战争前的世界……雅辛缇，那是一个什么样的世界啊？”</p>
+	<p>“这可就难倒我了啊……我也就比谬萨大几个月——这场战争已经持续了三个世纪了啊。”她尴尬地笑了笑。“我想，应该是一个充满了自由的世界吧。不被这些我们所背负的职责所束缚，所有人都能自由地去往所想抵达的理想……就是这样的世界吧。”</p>
+	<p>自由……记忆里出现过这样子的词汇——不是飘渺的词语，而确实是某人沉重的愿景。他曾听过这样子的梦想。对谬萨来说，那份自由一定是无比重要的梦想。</p>
+	<p>“啊，刚才的话要帮我保密哦。我好歹也是后勤部的分队长啊，如果让人知道我说过这种话的话……”雅辛缇对她眨了眨眼。“你懂的吧？”</p>
+	<p>“你说的这些……关于自由的世界。是谬萨说的吗？”薇莉塔问道。</p>
+	<p>“诶呀，暴露了啊？嘻嘻，我从以前就不太会说这些广而空的话题。对我来说，能够让我自己生活的泡泡一直存在……就够了。”女孩回过了头，看向了那被绯色浸染的天空。“谬萨和你说过了？”</p>
+	<p>少女没有点头。她不敢点头。所以，最后，她什么也没做，就是那样静静地看着对方。然后，世界就那样停了下来，停了下来。只剩下浪花声，以及微弱的暖风。</p>
+	<p>“那份愿望，那一切……都很沉重吧？”最终，还是女孩打破了那停滞的时间。她转了过来，看向了站在身后的少女。脸上的肌肉在抽搐，嘴角微妙地扬了起来。“很沉重吧？”薇莉塔看了很久，很久很久——她原本以为自己已经能够认出人们脸上的表情了，以为自己已经能够认出表情背后的那份情感了。</p>
+	<p>她什么也没看出来。</p>
+	<p>雅辛缇向前踏出了一步，又是一步。然后，她抱住了少女，抱住了薇莉塔。</p>
+	<p>“诶？”那份突如其来的拥抱，让少女有点不知所措。“那个……怎么了吗？”</p>
+	<p>“没什么，没什么。”女孩回答道。“只有点不敢看——没什么。突然，就是想抱着你而已。就是这样。”因为被对方抱住了，薇莉塔看不到她的表情。因为被对方抱住了。“就这样……就好。”</p>
+	<p>薇莉塔不明白。她不知道对方怎么了，不明白为何会突然抱住自己，更不明白该说些什么。“雅辛缇……谬萨他，是个什么样的人？”最终，此刻所有的疑惑都化作了一个唯一的问题。</p>
+	<p>“事到如今……还问这个？明明……明明你最了……”雅辛缇的声音消失在了唔咽中。</p>
+	<p>“拜托了，我想知道。”薇莉塔继续问道。“我想知道，在你的眼中，他是什么样的人。”</p>
+	<p>“这样子啊……真是拿你没办法呢。”她放低了声音，在少女的耳边轻声地说道。“谬萨他……想认为自己是个自私的人。……【这一段太重要了，待补充】”</p>
+	<p>少女从言语的间隙中听到了雅辛缇的啜泣声。“你……还好吗？”</p>
+	<p>“唔姆，很好。”女孩用双手抹去了眼眶上的泪水。“不用担心我啦。说出来后，就好多了。真的是，不用担心我啦。”</p>
+	<p>“嘛，下一次不要突然抱住我，然后说着说着就哭了啊。”薇莉塔松了一口气。“你明明知道我可不知道怎么安慰你……如果你真继续哭下去的话，我们当时的立场，不就彻底逆转了吗？”</p>
+	<p>“当时的……立场？”雅辛缇有些疑惑，但最后，还是笑了出来。“嗯，是啊。唔姆，可不能这样啊！我还是要保持姐姐的威严呢！”她松开了拥抱，直直地看向了眼前的少女。“那最后……再问你个问题吧：谬萨有说过，对他来讲，我是什么样的人吗？”</p>
+	<p>少女顿时定住了。“他……他觉得，你是很重要的朋友。嗯，就这样。”</p>
+	<p>“这样子啊，谢谢你告诉我……”女孩转过了身，背对着少女，看向了那早已落日海中的夕阳。“这样就好。我们回去吧，趁着还没天黑。”</p>
 	<p><br></p>
+	<p>晚风是凉爽的。二人走在了被各种灯光包裹的街道上，感受着从中泛出的暖意。这里的街道，相比分部三号来说，充满了生活气息。事实上，当时从旧的分部三号撤离后，有相当大的一部分居民便随着反抗军移居到了分部二号来。</p>
+	<p>如果有机会的话，如果战争真的能结束的话，少女或许会想再来这里一次。和谬萨一起……</p>
+	<p>“请问，是薇莉塔大人吗？”一阵陌生的声音打断了少女的思绪。薇莉塔回过了头，便看到了两位身着白衣的男子走了上来。</p>
+	<p>“诶呦，成大人物了嘛。”雅辛缇笑了笑。</p>
+	<p>少女翻了个白眼，向着两位男子走出了一步。“大人？”</p>
+	<p>“薇莉塔大人是谬萨大人钦定的助手，那么自然也是很重要的人物。”站在前面的男子回答道。“所以，您是薇莉塔大人吗？”</p>
+	<p>薇莉塔点了点头。“嗯，是我。那么你们是……”</p>
+	<p>“我们是武器研发部的人。”站在后面的男子走了上来，手中拿着一张凭证。“我们的部长想邀请你参加几场实验，以协助反抗军的武器研发。”</p>
+	<p>“你们……是在明知我们我是谬萨的助手后，依然决议来邀请我的吗？”</p>
+	<p>“恕我直言，薇莉塔大人——您在旧分部三号撤离战时的壮举，所有在那颗星星上的人都有目共睹。谬萨大人的研究虽然很重要，但他依旧是编外成员。只有靠我们武器研发部自己的努力，才有望结束这场战争。为此，我们才会向您抛出橄榄枝。”</p>
+	<p>“是这样子的话，还请有容我拒绝。”薇莉塔拉住了雅辛缇的手腕，头也不回地继续沿着原路走去。“雅辛缇，我们走吧。”</p>
 	<p><br></p>
-        <!-- 底部翻页按钮 -->        <nav class="pagination"><a href = "preq_3_9.html">&laquo; 上一段</a><a href = "preq_4.html">下一段 &raquo;</a>        </nav>    </main></body></html>
+	<p>“啊，真是可惜。原本那么好的收尾被这帮不要脸的人搅了兴。”雅辛缇叹了口气，随后停了下来。“那，我就送你到这里啦。剩下的路，你应该不至于不认得吧……我还得回分部那里取报告呢。”</p>
+	<p>“送到这里就行了——不如说，没必要送到这里来。真是幸苦你一趟了。”少女笑了笑。“明天，还是这个时间？”</p>
+	<p>“啊，不太行啊。”女孩叹了口气。“明天要去监督培训，后天也是，然后在这之后的话……好像没啥机会啊。”</p>
+	<p>“这样子啊。培训辛苦了呢。那么，有机会的话，再出来玩吧。”</p>
+	<p>“唔姆。那，你就保重哦！告诉谬萨，不要对自己太苛刻了。”</p>
+	<p>薇莉塔点了点头。“我会的。”</p>
+
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+<a href = "preq_3_9.html">&laquo; 上一段</a>
+<a href = "preq_4.html">下一段 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>
