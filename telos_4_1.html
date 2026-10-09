@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+	成为魔法少女就一定要搞百合吗？草案
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+	<li class="index-title-l1">
+	<a href = "telos_0.html">成为魔法少女就一定要搞百合吗？草案</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_1.html">壹</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_2.html">贰</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=telos_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=telos_2_2.html>三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_3.html">叁（微剧透）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_3_0.html>关于希娅和爱茵：感情线</a></li>
+		<li class="index-title-l2"><a href=telos_3_1.html>关于希娅和爱茵：成为魔法少女</a></li>
+		<li class="index-title-l2"><a href=telos_3_2.html>关于角色：凯厄</a></li>
+		<li class="index-title-l2"><a href=telos_3_3.html>关于混沌之子和混沌原核</a></li>
+		<li class="index-title-l2"><a href=telos_3_4.html>关于迷之（长得像我们的）美少女X</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_4.html">肆（剧透）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_4_0.html>关于世界</a></li>
+		<li class="index-title-l2"><a href=telos_4_1.html>关于愿力（虚构能量），以及世界的目的和姐妹俩的名字</a></li>
+		<li class="index-title-l2"><a href=telos_4_2.html>关于双子和魔法少女</a></li>
+		<li class="index-title-l2"><a href=telos_4_3.html>关于凯厄和混沌</a></li>
+		<li class="index-title-l2"><a href=telos_4_4.html>关于迷之（长得像我们的）美少女X</a></li>
+		<li class="index-title-l2"><a href=telos_4_5.html>关于后续</a></li>
+	</ul>
+	</li>
+
+
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+	<h1>关于愿力（虚构能量），以及世界的目的和姐妹俩的名字</h1>
+	<p>愿力是这个世界虚构能量所拥有的名称，而虚构能量是一个贯穿我所有*超现实*作品的一种力量。搞笑的是，在世界观中，它既不是虚构的，也不是能量。根据主世界的记载，起名字来源于神代时期这种还未能被理解的力量的批判，声称这是“一种虚构能量（Imaginary Energy）”，便最终获得了这种名字<span class = "tooltip-text"><sup>4</sup> 
+		<span class = "tooltip-box">是的，捏他的就是笛卡尔和虚数。</span></span>
+	。</p>
+	<p>虚构能量是一种非物质的存在，能够以此影响甚至扭曲现实的基底。同以太能和深渊一起被称为了三相，三者相互影响相互制衡，并最终构成了稳定的现实。值得注意的是，虚构能量最初也是最基础的使用方法是通过算式（非单纯的数学算式）来框定现实基底。</p>
+	<p>在主世界跟随双鑫的冒险时，虚构能量回应愿望的机制被揭开了——其本质为前人用虚构能量设下的改变现实的法则，让人们能在存在强烈的愿望时获得扭转现实的资本。既然，被称为愿力，那么在这个世界一定拥有着相似的构设。虽然不能直接回应人们的愿望，但当特殊的人（例如：在变身成魔法少女后的希娅和爱茵）拥有着强烈的愿望时，他们便会获得能够改写现实的机会。这也是我们两位女主能力的本源。</p>
+	<p>然而，显然（好像没那么显然）这个世界虚构能量的机制没有那么完善；这就要引申到我们的下一个话题了——世界的目的。需要明白的是，虽然各个不同的位面在融合后成为了一个个世界，但世界之外的空间已经彻底被深渊浸染了，而深渊又不断地试图入侵到世界之内（被深渊污染的环境完全无法供生命存在）。主世界的解法便是将世界包裹在一层外壳之中，即前文所提到的世界树体系。在这之中，最初的天才构筑了四大法：概念、法则、世界树、文明，并以此为人们拖延时间，寻找抵抗深渊污染的方法。其中，法则便包括了虚构能量回应人们愿望的机制。</p>
+	<p>在这个世界，也曾有过人试图构筑相同的构设。然而，此人用外壳包裹住了世界，但仅仅只是在构筑第二法的时候就失败了（因为想达到相同的目的，最终得出的救世之径如此相似也很正常嘛），外壳也因此并不完整。其学生兼继承人将第二法本身通过构设进行了固定，并期待着在未来有人能超越自己的老师，完成世界的外壳。</p>
+	<p>正是这样子的构设，在不断的化形和拟态之中，成为了希娅手中的变身器。这也是为什么希娅和爱茵二人拥有着通过凝聚愿力并创造奇迹的能力——她们手中的变身器正是为了回应人们的愿望并改变现实而诞生的。</p>
+	<p>到了这里，自序里关于两女主以及融合变身形态的名字的答案便已经浮出水面了。爱茵-忒洛斯娜-希娅（Ein-Telos-Cheia）：爱茵，即为因自我（I）而在的起始（En）<span class = "tooltip-text"><sup>5</sup> 
+		<span class = "tooltip-box">这个文字游戏是白鑫在主世界用于描述自己的。在成为双重人格前，最初拥有那具身体的人名为爱茵-忒莱希雅（Ein-Telecheia）；但后来白鑫占据了这具身体，使其成为了一个缺少自我的空壳（白鑫在最初的迷茫时期认为没有那些记忆的自己不应该存在），因此将名字改为了安忒莱希雅(Entelecheia)，即缺少些许自我（I）的人。</span></span>
+	；希娅，即为于终点所保持的状态（Echein）；忒洛斯娜，即为完满之形体（Telos）。将之融合在一起，便有了安忒莱希雅/隐德来希（Entelecheia/Entelechy），即为拥有自身的完善。</p>
+	<p>在主世界和这个世界中，这个名字都象征着伟业的完善与终结——主世界中，其代表着第四法（文明）的完善，将整个树体系导向战胜深渊的未来；在这个世界中，其代表着第二法（法则）的完成，即希娅和爱茵在不断的完善中完成对于第二法的构设，并最终封固世界的外壳。此为「世界的目的」。</p>
+	<p><br></p>
+	<p></br>	<p><sup>4</sup>是的，捏他的就是笛卡尔和虚数。<p>
+	<p><sup>5</sup>这个文字游戏是白鑫在主世界用于描述自己的。在成为双重人格前，最初拥有那具身体的人名为爱茵-忒莱希雅（Ein-Telecheia）；但后来白鑫占据了这具身体，使其成为了一个缺少自我的空壳（白鑫在最初的迷茫时期认为没有那些记忆的自己不应该存在），因此将名字改为了安忒莱希雅(Entelecheia)，即缺少些许自我（I）的人。<p>
+<p>
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+<a href = "telos_4_0.html">&laquo; 上一段</a>
+<a href = "telos_4_2.html">下一段 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>

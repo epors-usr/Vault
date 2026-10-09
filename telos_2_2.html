@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+	成为魔法少女就一定要搞百合吗？草案
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+	<li class="index-title-l1">
+	<a href = "telos_0.html">成为魔法少女就一定要搞百合吗？草案</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_1.html">壹</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_2.html">贰</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=telos_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=telos_2_2.html>三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_3.html">叁（微剧透）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_3_0.html>关于希娅和爱茵：感情线</a></li>
+		<li class="index-title-l2"><a href=telos_3_1.html>关于希娅和爱茵：成为魔法少女</a></li>
+		<li class="index-title-l2"><a href=telos_3_2.html>关于角色：凯厄</a></li>
+		<li class="index-title-l2"><a href=telos_3_3.html>关于混沌之子和混沌原核</a></li>
+		<li class="index-title-l2"><a href=telos_3_4.html>关于迷之（长得像我们的）美少女X</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "telos_4.html">肆（剧透）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=telos_4_0.html>关于世界</a></li>
+		<li class="index-title-l2"><a href=telos_4_1.html>关于愿力（虚构能量），以及世界的目的和姐妹俩的名字</a></li>
+		<li class="index-title-l2"><a href=telos_4_2.html>关于双子和魔法少女</a></li>
+		<li class="index-title-l2"><a href=telos_4_3.html>关于凯厄和混沌</a></li>
+		<li class="index-title-l2"><a href=telos_4_4.html>关于迷之（长得像我们的）美少女X</a></li>
+		<li class="index-title-l2"><a href=telos_4_5.html>关于后续</a></li>
+	</ul>
+	</li>
+
+
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+	<h1>三</h1>
+	<p>爱茵在做梦。少女知道自己在做梦，因为同样的梦她已经见过很多很多遍了。太多遍了。如果说相同的梦她做过十遍的话，那就是比需要梦到的次数多了十遍。</p>
+	<p>做过这个梦的次数早就不止十遍了。</p>
+	<p>烈火，浓烟。</p>
+	<p>在成为魔法少女前就做过那个梦了。那个炼狱。不，比成为魔法少女早太多了。早在小时就已经梦到过无数次了。</p>
+	<p>梦里会有烟雾、灰尘。会有倒下的墙壁，会有碎裂的砖瓦。每一次梦到，她都会坚定地告诉自己——那一定是最后一次了，一定是。</p>
+	<p>下一次也是这样想的。她会在梦里一步步走过那由烈火铸成的城市——人们的哭声，人们的哀嚎声，会不断地在耳边回响着。每一口气，烟尘都不断地呛着少女的肺部。走出的每一步，热浪都会化作尖刀，划过少女那稚嫩的肌肤。</p>
+	<p>然后，在梦的尽头，总是能看到倒在地上的，模糊的身影。</p>
+	<p>不对——</p>
+	<p><br></p>
+	<p>那天夜里，少女又做了同样的梦。</p>
+	<p>她在梦里不断地走过了那只剩下烈火与浓烟的城市。她看到了失神的人们不断地推开残骸，翻找着瓦砾。似乎在寻找着什么，似乎失去了什么。</p>
+	<p>自从成为魔法少女后，那噩梦就变得愈发清晰了。黑烟变得愈加浓烈，火焰变得愈加浓烈。一切的一切，都变得更疼了。</p>
+	<p>在梦的尽头，她终于能看清那倒在地上的，模糊的身影了。但终于看清了之后，她反而后悔了——其实她也没那么想看到，也没那么想知道，知道——</p>
+	<p>希娅倒在了地上。倒在地上的是希娅。她的腹部流着血，很多很多血。身体的各处也有着明显烧伤的痕迹。她不断地抽搐着，身体不断地抖动着。鲜血止不住，不断地流出来。红色，红色，红色……</p>
+	<p>“希娅！”明明什么都想不明白，身体却向前扑了上去。“一定还有办法的，希娅！一定，一定，一定——”</p>
+	<p>那时，希娅便会微微地睁开眼。看到爱茵时，她会露出些许笑容。“爱茵，我……”</p>
+	<p><br></p>
+	<p>“希娅！”爱茵睁开了眼。</p>
+	<p>那就是，梦境的尽头。</p>
+	<p><br></p>
+	<p>房间里有急促而微弱的呼吸声。希娅在听到了妹妹的呼喊声后微微地睁开了双眼。房间里还是黑暗的，只有微弱的月光透过窗帘的缝隙，带来了些许光亮。“嗯……爱茵，你知道现在几点嘛……怎么了吗？”</p>
+	<p>“啊……抱歉，没事。做梦了。”爱茵回答道。她的声音有点微弱，又有着几分犹豫。</p>
+	<p>希娅早就对这样的爱茵见怪不怪了。“又是那个梦吗？”她问道。“爱茵，如果感到害怕的话，姐姐可以陪你睡哦。”</p>
+	<p>“哈？要你管！”她听到了爱茵在床上翻了一个身。声音又变得微弱了些许。“我才不会怕呢，才不会……”</p>
+	<p><br></p>
+	<p>在意识模糊之际，少女依稀感觉到了一个温暖的拥抱。是从背后来的，温暖的拥抱。</p>
+	<p>“什么都别说！”那是爱茵的声音。比先前更微弱了，也好似少了几分锐气。“就这样让我抱一会儿，姐姐。”</p>
+	<p>“哦？爱茵今天那么主动地抱上来，是想要被姐姐好好疼爱一下吗？”希娅半开玩笑地问道。</p>
+	<p>“姐姐，你刚才有说什么吗？”爱茵回答道。“我好像没听清呢。”</p>
+	<p>“抱歉抱歉。我求你下次对我温柔一点嘛……”</p>
+	<p>“真的是，在这种时候还喜欢开玩笑。”爱茵将整个脸都埋进了少女的睡衣里。少女能听出来，听出那声音变得闷了些许。“明明所有人都会有脆弱的时候嘛。明明姐姐你也会做噩梦。”</p>
+	<p>“是啊，但在这种时候成为我可爱的妹妹的依靠，就是姐姐我的职责了，不是吗？”希娅握住了爱茵的双手。暖暖的，还很柔软。“早点睡吧，爱茵。明天……明天或许又会是很漫长的一天呢。”</p>
+	<p><br></p>
+	<p>好暖和。</p>
+	<p>爱茵的拥抱太过于暖和了。从小时候就一直这样——体温一直偏高；即使后来很少生病了，体温依然一直偏高。少女一直觉得，这样温柔而温暖的拥抱让人感到很舒服。但这样温暖的拥抱也在有时会有着明显的弊端。有时——比如现在。</p>
+	<p>“根本睡不着啊……”希娅默默地对自己说道。那拥抱太过于温暖了——温暖到她根本没法睡着。“明明我自己才刚提醒过她要早点睡啊……”</p>
+	<p>自那之后，又过去了多久呢？几个小时？半个小时？十分钟？少女不确定，但她能感受到那来自背后的拥抱已经不再是紧紧地贴在她身上了。</p>
+	<p>希娅转过了身，看向了原本侧卧在自己身后的妹妹。她的双眼已经紧紧地闭上了；房间里只剩下了她那微弱而令人感到安心的呼吸声。“你倒是已经睡着了啊。”她坐了起来。</p>
+	<p>“姐姐……不要走……”爱茵在睡梦中呼唤道。</p>
+	<p>“没事，没事。”希娅从没听过爱茵和她聊起那不断重复的噩梦的内容。但从对方的反应来看，多半和自己有关。毕竟，爱茵是最爱着她的人。</p>
+	<p>少女默默地注视着早已进入梦乡的另一位少女。她的脸凑的越来越近，越来越近。“爱茵，姐姐会一直陪伴在你身边的。”她吻了上去。希娅吻了上去，吻在了爱茵的额头上。“一直。”</p>
+	<p>月光依然透过了窗帘，洒在了房间里，洒在了两位少女之上，正如其一直做的那样。那月光有点刺眼了。</p>
+	<p><br></p>
+	<p>夜风是凉爽的，甚至有点冷飕飕了。希娅隐约记得晚上下过雨了，导致现在外面都是湿的。少女一人站在长廊中向着窗外望去，望着那被半被云端遮蔽的天空。天空……天空……她想起了好久前，那时还——</p>
+	<p>身后的房门被打开了。“诶？希娅，这么晚了，还没睡啊？”那是少女的哥哥，萨吉塔。“都两点了哦。”</p>
+	<p>“啊哈哈……前面醒来了又睡不着，出来散散心。”希娅尴尬地笑了笑。“哥哥呢？你不也一样还没睡吗？”</p>
+	<p>“前面还在备课呢……过两天就要讲课了，得赶紧准备啊。有些东西还得核对一下。”</p>
+	<p>“真是认真啊。”少女还没有忘记此行的目的。虽说前几天还在玩，但下周就要开始支教活动了。但……“不对，哥哥，我怎么记得课件两周前就截止了？这样看的话，好像也没那么认真呢。”</p>
+	<p>“嘛，这种事情就不用说出来了吧。”他走到了少女身边，一同看向了那阴沉的天空。“爱茵这两周没在欺负你吧？”</p>
+	<p>“我可是姐姐，她怎么会——”希娅忽然意识到了些许不对劲。自己明明是姐姐，在外面也多少会维持一下身为姐姐的威严。况且爱茵在外面也只会少量地调侃一下她。因此，不管从什么角度考虑，这问题都很<b><i>奇</i></b>怪。“诶？”</p>
+	<p>“那个，哥哥也不知道这方面的东西该怎么开口……而且谈这种东西怎么想都会有些奇<b><i>怪</i></b>。但，我毕竟是你们的哥哥啊，得引导你们树立正确的价值观……”他转过了头，看向了那坐立不安的少女。“哥哥能理解，毕竟到了这样的年纪，会产生爱慕之情、甚至开始进行……探索。这些都是正常的——”</p>
+	<p>“等一下，哥哥！你是不是误会了些什么<span class = "tooltip-text"><sup>1</sup> 
+		<span class = "tooltip-box">指正：并没有。</span></span>
+	！”</p>
+	<p>“嘛，哥哥想说的就是——毕竟你们还是未成年嘛——只要没做什么过火的事情就行，我也不会去管的……应该不用我明说是些什么事吧？”萨吉塔笑了笑。“以及，如果爱茵一直……欺负你的话，可以和哥哥说哦。我会和她去谈谈的。”</p>
+	<p>希娅将整个脸埋进了手中。“哥哥，这种事情我们才没在做啊！”她能感受到脸部在微微发烫。</p>
+	<p>“哥哥想说的就这些。”他轻轻地拍了拍自己妹妹的脑袋，随后向着自己的房间走去。“早点睡吧，希娅。别熬夜了。如果你遇到什么困难，或者单纯想谈谈的话，哥哥一直都在哦。”</p>
+	<p>少女稍微地抬起了头。云已经散去了一大半了，让那皎洁的月亮从其背后探了出来。月光依旧明亮；洁白而刺眼。</p>
+	<p><br></p>
+	<p><i>“原来，这份情感……和我一样啊。”</i></p>
+	<p><i>——爱茵</i></p>
+	<p></br>	<p><sup>1</sup>指正：并没有。<p>
+<p>
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+<a href = "telos_2_1.html">&laquo; 上一段</a>
+<a href = "telos_3.html">下一段 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>
