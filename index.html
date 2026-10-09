@@ -102,6 +102,49 @@
       margin: 40px auto;
       padding: 0 20px;
     }
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 84%;
+            width: 12%; 
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
     h2 {
       color: #2c3e50;
       margin-top: 40px;
@@ -163,6 +206,11 @@
       </p>
         <!-- 欢迎来到混沌理论JCOB的藏书室。这里有书, 和书, 和书. 在您停留的期间内, 您可以随意翻阅这里的书籍. -->
     </section>
+
+    <aside class="sidebar-container">
+      <h3>更新公告</h3>
+      <p>20261009 - 《当你迷茫》：更新了发展·十二、发展·十三。</p>
+    </aside>
 
     <section id="books">
       <h2>书库</h2>
