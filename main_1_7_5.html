@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+	序  章 流淌着泪水的梦
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+	<li class="index-title-l1">
+	<a href = "main_1_0.html">序  章 流淌着泪水的梦</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_1.html">光与影交汇之处·终（下）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_1_0.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_1_1.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_1_2.html>十四</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_2.html">光与影交汇之处·其三</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_2_2.html>三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_3.html">第一章 沿着星海的轨迹</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_4.html">第一幕 笼罩在穹顶之下</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_4_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_5.html>六</a></li>
+		<li class="index-title-l2"><a href=main_1_4_6.html>七</a></li>
+		<li class="index-title-l2"><a href=main_1_4_7.html>八</a></li>
+		<li class="index-title-l2"><a href=main_1_4_8.html>九</a></li>
+		<li class="index-title-l2"><a href=main_1_4_9.html>十</a></li>
+		<li class="index-title-l2"><a href=main_1_4_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=main_1_4_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=main_1_4_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=main_1_4_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=main_1_4_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=main_1_4_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_24.html>二十五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_25.html>二十六</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_5.html">光与影交汇之处·其一</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_5_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_5_3.html>四</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_6.html">第二幕 望向那海的彼岸</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_6_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_5.html>六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_6.html>七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_7.html>八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_8.html>九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_9.html>十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_24.html>二十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_28.html>二十九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_29.html>三十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_30.html>三十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_31.html>三十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_32.html>三十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_33.html>三十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_34.html>三十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_35.html>三十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_36.html>三十七</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_7.html">幕  间 铁国边境的回忆</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_7_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_7_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_7_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_7_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_7_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_7_5.html>六【存在待修改内容】</a></li>
+		<li class="index-title-l2"><a href=main_1_7_6.html>七</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_8.html">幕  间 巨树下的求解者</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_8_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_8_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_8_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_8_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_8_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_8_5.html>六</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_9.html">光与影交汇之处·其六</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_9_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_9_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_9_2.html>三</a></li>
+	</ul>
+	</li>
+
+
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+	<h1>六【存在待修改内容】</h1>
+	<p>飞船在引导下有惊无险地穿过了那帷幕。一颗铁铸的卫星顿时出现在了众人面前——不过，事实上，那是一个描述上的错误：使用的自然不是铁，而是某种合金。</p>
+	<p>“真是想不到啊，还真有一颗卫星就这样被藏在了空间之中。”乐评价道。“千年前的帝皇……你究竟在害怕些什么，才要把这里藏起来？”</p>
+	<p>卫星的表面距离众人越来越近，越来越近，直到——</p>
+	<p>咚！</p>
+	<p>飞船在一声巨响下降落在了地标。</p>
+	<p>“啊，糟糕！”鑫连忙检查起了船体完整性。“真的是，乐，你这引导的坐标不对啊。实际表面明显要近很多啊！”</p>
+	<p>“抱歉抱歉，我在计算时忘记考虑帷幕里的影响了。”</p>
+	<p>“诸位，感谢你们的协助。和你们共行的这条短暂的旅途，说实话，还不赖。让我想到了以前。但……”男子脸上露出了淡淡的微笑。“我们就在此分别吧。我还有我未完成的事，你们还有着自己的旅途。”他转过了身，向着气闸走去。鑫能看出来，看出来那微笑背后的些许哀伤。</p>
+	<p>“诶？那你返航呢？”鑫点下了飞船的自我修复系统。“你没有离开这里的手段吧。”她心中有这个不好的预感。有时，她讨厌着自己的这种直觉。</p>
+	<p>“无妨，我的朋友们会来接我的。”</p>
+	<p>“这里可是旧帝国留下的遗产啊。”她向前走了几步。“你打算一个人等到你们的朋友过来？”</p>
+	<p>男子笑了笑。“论资历，我可是你们的老前辈啊。”他握紧了手中的刀柄。“不用担心，我有保护好自己的能力。更何况，帝皇应该不会在这里留下构造体。我能明白。”</p>
+	<p>“但——”</p>
+	<p>她又踏出了几步，但乐却抓住了她的肩膀。“让他去吧。”</p>
+	<p>少女看向了那不断离去的男子，心中不由地升起了些什么。对方在旅途中聊起的故事还算有趣，不，非常有趣。各种她从未想象过的世界，各种消失在历史长河中的人与事。他似乎什么都明白。</p>
+	<p>那和他似乎随时都会倒下的身影形成了强烈的对比。</p>
+	<p>少女以前好似看过一样的背影。那是为了看似永远无法完成的、最重要的约定而献出了一切的男子。无论身处何方，无论看似多么地脆弱，对方都一直没有倒下，一直到最后的时刻之前。而在最后，他好像真的完成了那看似永远无法完成的约定。</p>
+	<p>因为少女一直陪伴在对方的身边。</p>
+	<p>所以，鑫明白，明白对方此刻的心境。因为她也约好了，所以也已经踏上了同样的道路。“那么，至少让我为你送行一段路吧。”鑫无奈地笑了。正因为自己陪伴过那人，正因为有着鑫永远陪伴自己，她才不愿眼前的男子独自一人走进那沉重地未来之中。“飞船的修复还需要一会儿。就让我走完这最后一段路吧。”</p>
+	<p>“这样啊。”对方已经穿好了太空作业服，向着气闸走去。“那我好像确实没办法拒绝呢。赶紧跟上吧。”</p>
+	<p>鑫也立马穿上了太空作业服。“来了。”</p>
+	<p><br></p>
+	<p>“奇怪。”少女看向了终端，看着上面逐渐趋于恒定的数据。“居然有大气，气体组成还是类地的。不应该啊。”鑫抬起了头，看向了走在前方的男子。“你不是说这颗卫星是帝皇造的吗？”</p>
+	<p>黑色的穹顶盖在了两人之上，盖在了整颗卫星之上。外界无法观测到这颗卫星，那么星空自然也无法倒映在天穹之上。所以，那天空自然是黑暗的。既然如此，地表不应该是明亮的才对。</p>
+	<p>但地表就是明亮的。少女没搞懂。</p>
+	<p>“不，我当时说的是这颗卫星是被帝皇隐藏起来的……不过实际上，在这个情景下应该没有区别。”男子继续向前走去。看着他不停的背影，鑫忽然想起来到现在都还不知道对方的名字。“要我猜的话，或许帝皇是在等待着哪个人类来到这里。”</p>
+	<p>鑫跟了上去。“抱歉，我没懂。”</p>
+	<p>男子沉默了。两人继续走在了黑暗的天穹下，不断地向前走。眼前是金属的大地，不断向着地平线延伸。无穷无尽。自建成以来，那是第一次有有机生命主动地踏上这个世界。</p>
+	<p>“说实话，在第一晚和你聊过以后，我以为你会是一个很难沟通的人。”男子忽然打破了沉默。“但又和你同行了几天后，好像发现也没那么难沟通。”</p>
+	<p>“啊，是那时候吗？是不是有点冒犯到你了，哈哈哈……”鑫皱了皱眉。<i>鑫到底和他聊了些什么啊？</i></p>
+	<p>“因为人们心中有了对于奇迹的愿想，所以才能创造奇迹。只不过，这个世界自第二次寰宇战争之后就给了我们一个能够直截了当创造奇迹的办法。”他的脚步似乎慢下了些许。“你们不也一样吗？明明才是四个孩子，就已经自己在跨越旧帝国的疆域了。你们也是因为期盼着奇迹，才会踏上旅途吧。”</p>
+	<p>“我……不否认。”</p>
+	<p>“这样子啊，也是呢。所以，你们最终渴望的奇迹，又是什么呢？”男子半开玩笑地问道。</p>
+	<p>少女停下了脚步。她看向了天空，依然是黑的。自然不会有任何变化——不如说，有变化才会奇怪。“世界树。我们在找世界树。原因……不用我解释吧？”</p>
+	<p>听到这里，男子也停下了脚步。“你是认真的？”两人离得有点远了，少女看不清对方脸上的表情。不过，她能从通讯频道中听到那呼吸声。进、出、进、出。之前的呼吸声有那么响吗？</p>
+	<p>鑫微微地点了点头。“嗯，认真的。使骸核心也已经搞到了。”虽然看不见，但她好像能感受到那锐利的目光注视着她。她不确定这时说出来自己的目标是好事还是坏事。“怎么了吗？”</p>
+	<p>“连使骸核心都搞到了啊。”男子将手握在了刀柄上。“真是厉害呢。”</p>
+	<p>少女也将手放在了枪的握柄上。“啊，是啊，花了我好大的一番功夫啊。”握住挂在腰间的手枪只是障眼法。虚构能量已经在胸口聚集了——只要对方做出攻击的架势，拟亚黑铁的盾牌便会瞬间包裹住自己。鑫至今还没有见到过其他能直接看到虚构能量流势的人类，至少，不依靠仪器就能做到的人类她没有见到过。因此，如果发生战斗的话，她不认为自己会落入劣势。</p>
+	<p>“收手吧，我打不过你。但你想赢我也得费一番功夫。”对方转过了身，继续向前走去。他的手已经成刀柄上放了下来。“只是想到了一些故事而已。只是几个朋友，为了回到更美好的过去，而燃尽自我的无聊故事罢了。你不需要在意。”</p>
+	<p>鑫的手没有从枪的握柄上拿下来。“他们后来怎么样了？”</p>
+	<p>“后来怎么样了？结局不值一提。除了两个人，都死了。剩下的，一人被困在了永恒的迷宫中，一人永远地流浪于银河。”他叹了口气。“扭转时间，有时，并不完全是好事。”</p>
+	<p>“听起来，你对我们旅途的终点颇有些不满。”</p>
+	<p>“是你想多了。倒不如说，我在佩服你们能为此做到这一步。明明只是小孩，却已经背起了那么庞大的世界。”男子没有停下来。“自从那位英杰在使骸的指引下前往了混沌区已经过去了那么久了——那已经是公司前两千六百年的事了——人们还是没有搞明白使骸和世界树的联系。曾确实找到世界树的人的确不少，但又有多少倒在了前往世界树的路上呢？曾试图进入世界树内部的人，又有哪个没有在数据洪流中被淹没呢？”</p>
+	<p>少女沉默了。</p>
+	<p>“抱歉，话题有点沉重了。我见过的东西太多了，有时很难不感慨这些即将逝去的存在。”他向后看了一眼，看着站在原地的鑫。“我们继续走吧，目的地不远了。”</p>
+	<p><br></p>
+	<p>旅途的后半段被笼罩在了沉默之中。</p>
+	<p>旅途的终点，是一座石碑，巨大的石碑。纯黑色的石碑。不过，那好像不是石头，而是由金属制成的。少女认得这种金属——亚黑铁。那是她最喜欢用的材料，轻盈而坚固。高品质的做工下甚至坚不可摧。</p>
+	<p>说是碑，有点具有误导性。一座巨物自金属的地表向着黑色的天穹指去，高到顶点已经几乎消失在了视野中。而坐落在碑的底部，有着一束花。有机生命的花，纯白的花。那朵有机生命的花在这早已被遗弃的无机废墟上显得格格不入。</p>
+	<p>奇怪的是，那朵花没有要枯萎的迹象，甚至似乎才刚被摘下来一般。但明明不会有人路过这里才对。</p>
+	<p>“欢迎，来到铸铁王座，帝皇加冕之地。”男子说道。“同时，也是他为自己造的陵墓。”</p>
+	<p>鑫看向了那指向天穹的纪念碑，似乎明白了。</p>
+	<p>那是座墓碑。由帝皇建成，为自己而建。只能这样子解释才对。因为没有人类会为那无机帝皇悼念，因为只有帝皇才会让模拟数据自以太空间之中流溢出来。</p>
+	<p>就好像，它早已预言到了自己的死亡一般。</p>
+	<p>“帝皇曾和你我一样，是人类。他将自己的意识上传到了星体计算机之中，在这里不断地为自己加冕，提升算力。”男子拾起了一颗被卡在墓碑中的球体。“在战争的尾声，帝国的四中枢全被破坏，统御装置也彻底瘫痪，帝皇被封锁在了在它的王座之中，也就是这里。即使是现在，它依然活着。”</p>
+	<p>“那个，为什么你这么了解帝皇的事？”</p>
+	<p>“当然，帝皇自然还留有后手。”男子似乎并不在意鑫抛出的疑问，继续自说自话地讲了下去。“在这之中，它留下了一道算式……不对，比起算式，应该已经更接近电子模因的虚构术式了。只要在机械中进行计算，就能重新点燃军团的怒火，再现帝国的荣耀。”他将那颗球体于掌中捏得粉碎。“这是座陵墓，也是个礼物，为下一位帝皇献上的礼炮。”</p>
+	<p>“抱歉，我还是没听懂……你想做什么？”</p>
+	<p>“小姑娘，你该回去了。送到这里就可以了，送到这里就可以了。你的同伴们应该还在等你吧。我还有一笔私人恩怨要完成。”他拔出了刀。</p>
+	<p>身体冻住了。出鞘的那一瞬间，少女感受到了巨大的波动。虚构能量的波动。她从未感受到过如此强大的虚构能量波动。刀鞘上的金色纹路已经逐渐暗淡，只剩下了在黑色天空下不断闪烁的刀身。金色的光芒。“不对……你这样的话，你会——”</p>
+	<p>男子将刀刺入了墓碑之中。裂缝，巨响，然后便是废墟。原本的那棵花朵早就消失在了碎裂的金属块之中。“不用担心。你们还有自己的旅途要走，我也有我的。所以，我们就在此别过吧。”</p>
+	<p>鑫看向了站在废墟旁的男子。明明依然看似马上就要倒下去了，却反比之前站得更加坚定了。她想说些什么，但声音却卡在了喉咙里，怎么也出不来。最后，她看向了来时的路。原本广阔的金属地表在此时仿佛坍缩成了唯一的一条路。那条路很窄，只有少女一人能通过。</p>
+	<p>男子默默地站在了那里，不再言语。但虚构能量依然会聚在他的刀上。</p>
+	<p>少女有些不舍地再回头看了一眼，便向着飞船奔去。</p>
+
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+<a href = "main_1_7_4.html">&laquo; 上一段</a>
+<a href = "main_1_7_6.html">下一段 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>

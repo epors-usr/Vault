@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+	序  章 流淌着泪水的梦
+    </title>
+    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+    <style>
+        /* 全局样式与字体设置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 1. 悬停文本容器 */
+        .tooltip-text {
+            position: relative;
+            display: inline-block;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .tooltip-text:hover {
+            text-decoration: underline;
+        }
+
+        /* 2. 提示框样式重置 */
+        .tooltip-text .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            
+            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
+            width: max-content;
+            max-width: 300px; 
+            
+            background-color: #333333;    /* 背景深色 */
+            color: #ffffff;               /* 文字浅色 */
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 6px;
+            
+            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            white-space: normal;          /* 允许文本正常折行 */
+            /* ------------------------------------------------------------- */
+
+            position: absolute;
+            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
+            bottom: 125%;                 /* 悬浮在文字上方 */
+            left: 50%;
+            transform: translateX(-50%);
+
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 小三角指示器 */
+        .tooltip-text .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333333 transparent transparent transparent;
+        }
+
+        /* 4. 悬停触发 */
+        .tooltip-text:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        header img {
+            width: 10%;          /* responsive percentage */
+            max-width: 200px;    /* upper limit */
+            min-width: 100px;    /* lower limit */
+            height: auto;        /* keep aspect ratio */
+            border-radius: 50%;  /* round avatar */
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+
+        }
+
+        nav a:hover{
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ----------------------------------------------------
+           1. 底层主内容容器 (Main Container)
+           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
+           ---------------------------------------------------- */
+        .main-container {
+            width: 55%;
+            margin-left: 30%;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            z-index: 1; /* 保证在底层 */
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .main-container p {
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 底部翻页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f2f5;
+            color: #0066cc;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background-color: #0066cc;
+            color: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           2. 表层固定索引容器 (Fixed Overlay Index Container)
+           位置：左右 20% ~ 35% (left: 20%, width: 15%)
+                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
+           ---------------------------------------------------- */
+        .sidebar-container {
+            position: fixed;
+            top: 25%;
+            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
+            left: 12%;
+            width: 20%;  /* 即 35% - 20% = 15% */
+            
+            background-color: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 20px 15px;
+            
+            overflow-y: auto; /* 允许内部索引内容滚动 */
+            z-index: 10;     /* 保证处于表层 */
+        }
+
+        .sidebar-container h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #444;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .sidebar-container ul {
+            list-style: none;
+        }
+
+        /* 索引基础链接通用样式 */
+        .sidebar-container a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .sidebar-container a:hover {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        /* 大标题（一级索引）样式 */
+        .index-title-l1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .index-title-l1 > a {
+            padding: 6px 8px;
+            color: #222;
+        }
+
+        /* 小标题（二级索引）列表与缩进设置 */
+        .index-sub-list {
+            padding-left: 16px; /* 控制小标题整体向右缩进 */
+            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
+            margin-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .index-title-l2 {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .index-title-l2 > a {
+            padding: 4px 6px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="profile"><nav>
+        <!-- Replace profile.jpg with your own image or an online link -->
+        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+        </nav></div>
+    </header>
+
+    <!-- 表层固定索引容器 -->
+    <aside class="sidebar-container">
+        <h3>目录索引</h3>
+        <ul>
+	<li class="index-title-l1">
+	<a href = "main_1_0.html">序  章 流淌着泪水的梦</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_1.html">光与影交汇之处·终（下）</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_1_0.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_1_1.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_1_2.html>十四</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_2.html">光与影交汇之处·其三</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_2_2.html>三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_3.html">第一章 沿着星海的轨迹</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_4.html">第一幕 笼罩在穹顶之下</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_4_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_5.html>六</a></li>
+		<li class="index-title-l2"><a href=main_1_4_6.html>七</a></li>
+		<li class="index-title-l2"><a href=main_1_4_7.html>八</a></li>
+		<li class="index-title-l2"><a href=main_1_4_8.html>九</a></li>
+		<li class="index-title-l2"><a href=main_1_4_9.html>十</a></li>
+		<li class="index-title-l2"><a href=main_1_4_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=main_1_4_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=main_1_4_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=main_1_4_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=main_1_4_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=main_1_4_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=main_1_4_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=main_1_4_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=main_1_4_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=main_1_4_24.html>二十五</a></li>
+		<li class="index-title-l2"><a href=main_1_4_25.html>二十六</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_5.html">光与影交汇之处·其一</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_5_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_5_3.html>四</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_6.html">第二幕 望向那海的彼岸</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_6_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_5.html>六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_6.html>七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_7.html>八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_8.html>九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_9.html>十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_24.html>二十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=main_1_6_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=main_1_6_28.html>二十九</a></li>
+		<li class="index-title-l2"><a href=main_1_6_29.html>三十</a></li>
+		<li class="index-title-l2"><a href=main_1_6_30.html>三十一</a></li>
+		<li class="index-title-l2"><a href=main_1_6_31.html>三十二</a></li>
+		<li class="index-title-l2"><a href=main_1_6_32.html>三十三</a></li>
+		<li class="index-title-l2"><a href=main_1_6_33.html>三十四</a></li>
+		<li class="index-title-l2"><a href=main_1_6_34.html>三十五</a></li>
+		<li class="index-title-l2"><a href=main_1_6_35.html>三十六</a></li>
+		<li class="index-title-l2"><a href=main_1_6_36.html>三十七</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_7.html">幕  间 铁国边境的回忆</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_7_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_7_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_7_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_7_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_7_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_7_5.html>六【存在待修改内容】</a></li>
+		<li class="index-title-l2"><a href=main_1_7_6.html>七</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_8.html">幕  间 巨树下的求解者</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_8_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_8_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_8_2.html>三</a></li>
+		<li class="index-title-l2"><a href=main_1_8_3.html>四</a></li>
+		<li class="index-title-l2"><a href=main_1_8_4.html>五</a></li>
+		<li class="index-title-l2"><a href=main_1_8_5.html>六</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "main_1_9.html">光与影交汇之处·其六</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=main_1_9_0.html>一</a></li>
+		<li class="index-title-l2"><a href=main_1_9_1.html>二</a></li>
+		<li class="index-title-l2"><a href=main_1_9_2.html>三</a></li>
+	</ul>
+	</li>
+
+
+        </ul>
+    </aside>
+
+    <!-- 底层主内容容器 -->
+    <main class="main-container">
+	<h1>二十二</h1>
+	<p>鑫的父亲推开了房门。“抱歉抱歉，实验室那里出了点问题，现在才回来。”</p>
+	<p>少女向门口看了一眼，又立刻转过了身。“哼，臭老爸，总算回来了。连你女儿的生日也不想过啦？”说完她便拿起了沙发上的那本书，把脸埋了进去。</p>
+	<p>“好啦好啦，鑫。我都道歉了。”他从后面摸了摸鑫那碧蓝的头发。“你生日下午想去哪里玩啊？”</p>
+	<p>“你本名……不是鑫。父亲绝对不会叫你这个名字。快点想起来……你这次回到空港是干什么来的？”</p>
+	<p>鑫把头抬了起来，看着自己的父亲。“我……”</p>
+	<p>“好啦，别生气了。你看你眼睛那么红的，是不是又哭了？”鑫的父亲抱住了自己的女儿。“没事，我在。我一直都在。”</p>
+	<p>“我哭了还不是因为你一直不回来啊，臭老爸！”鑫把对方推了开来，指了指自己的父亲。“我决定了！我要再去海滩那边。”</p>
+	<p>“啊？又去啊。两周前不是刚去过吗？”</p>
+	<p>“去嘛！这几天α星和β星正好能同时看到。”</p>
+	<p><br></p>
+	<p>少女坐在了海岸边，任凭海水打湿自己的双腿。晚霞的凉风从发间拂过，鑫望着被染红的海绵，望着那橙色的天空，望着两颗赤色的落日，叹了口气。对现在的她来说，那本该是如此熟悉的景色，但现在那橙黄的海面和天空却令她感到无比陌生。</p>
+	<p>“怎么了？什么心事吗？”</p>
+	<p>鑫摇了摇头。“没什么，只是感觉最近的几周都被我浪费掉了。现在想起来，好像什么事也没有做过，什么都想不起来了。”少女静静地望着那无限延伸的海面，叹了口气。</p>
+	<p>她的父亲笑了笑。“小小年纪那么严肃干嘛？你才多大？你前面还有几百年的时间呢，何必如此拘泥于这几周的时间？”</p>
+	<p>“只是，觉得有什么重要的事情被忘记了。”</p>
+	<p>少女的父亲抱住了她。“没事，我会一直在的。不管你走到何方，我一直都会在。就在这里。”</p>
+	<p>“不对，他……”</p>
+	<p>少女也紧紧地抱住了自己的父亲。“嗯，那么说好了。你一直要陪着我哦。”她回答道。</p>
+	<p>“他不会，但我会。我一直都会陪着你……所以，快点……”</p>
+	<p><br></p>
+	<p>少女闭上了双眼。在她眼前浮现的是一个陌生……不对，熟悉，无比熟悉的房间。地板上的黑白方块纹路。华丽的椅子，黑白两把。少女见过。这幅景色在她脑海中比那海岸，比那落日更加真实。</p>
+	<p>少女面前站着另一位少女。眼前的景色仿佛一面镜子，但她体内的每一根神经都在告诉她不是。“你是……我？”</p>
+	<p>对方笑了一笑。“哈哈，熟悉的问题……上一次你也是这么问我的……不对，你中间还问过她一遍……不过，不重要。”那名少女也有着碧蓝色的卷发，紫色的双眸。“嗯，抱歉，要打破你的美梦了，但是我们的时间要不够了。你在这里留的越久，你的身体就越有危险。”</p>
+	<p>少女疑惑地看着对方。“这……里？你是要我离开空港吗？”</p>
+	<p>“啧，还没意识到吗？”那名少女用机械的右手指向了鑫。“时间不多了。听着：你的本名不是鑫，我们的父亲早就去世了，这里不是现实。快点找到冲破暴雨的方法，快点找到——”少女的形象闪烁了一下，模糊了起来。“看来时间是真不够了。回想一下你为什么会回到空港，并找到不符合这个虚构世界的痕迹。跟上——”</p>
+	<p>眼前的景色消失了。“喂！什么意思？什么叫我们的父亲去世了……他不是……不是……？”</p>
+	<p><br></p>
+	<p>少女从梦中惊起，发现她依然在自己的床上。她拿起了右手去擦拭眼眶上的泪水，却发现自己的右手早已是金属的义肢。“对哦……手臂几年前就断了……奇怪……怎么感觉这几天……忘了？”她看向了打开的房门，心中便升起了不安。</p>
+	<p>少女从房间里跑了出去，冲进了客厅。“老爸！”</p>
+	<p>回应少女的只有深沉的鼾声。</p>
+	<p>少女看向了躺在沙发上的父亲，靠在了房门上。“什么呀，这不是好好的吗？”</p>
+	<p><br></p>
+	<p>少女呆呆地看着盘子里的早餐。</p>
+	<p>“你怎么啦？大早上又有什么心事了？”</p>
+	<p>鑫摇了摇头。“不是……就是做了个噩梦。”她把食物送到了嘴边。“奇怪……当时明明感觉那么的真实，现在想起来感觉好奇怪啊。真的……好奇怪啊。我好像有什么一定要去完成的事？”</p>
+	<p>“没事，梦嘛，一般都和现实相反。正常。”</p>
+	<p>少女看着父亲身后的窗户。“但是，感觉太过真实了。而且……而且梦里，老爸你去世了，还有……”。一个白色的影子从窗外跃过。少女意识到了什么，便站了起来，走向了窗前。椅子倒了下来，但少女并没有把它扶起来。少女看着那个身影，看见了她雪白的头发。“白……灵？”</p>
+	<p>少女的父亲看向了她。“你怎么了？”</p>
+	<p>“白灵！”少女望着那个逐渐离去的身影。“我这是怎么回事……明明说过了那是不能忘记的人……”一把枪出现在了她的手中，是她最熟悉的那把改造过的gx系列。少女握紧了她手中的手枪，推开了家门。四个熟悉的身影从她面前跑过。是她的同伴们，旅行中的同伴们，也是她知道她现在必须找到的四人。“乐……弈、昱……还有……我自己。”少女的左脚迈出了第一步，踏出了门框。</p>
+	<p>“你终于要走了吗？”少女的父亲问道。</p>
+	<p>“嗯，要走了。而且，我想，很久很久都不会再回来了。”少女回答道，她的声音中带有微弱的哭腔。她的右脚也踏出了门框。</p>
+	<p>“是吗？你的旅途上，不会又是你自己孤身一人吧。”</p>
+	<p>少女摇头了。“这次……不会了。这次的旅途有同伴。”泪水湿润了她的眼眶，但她没有回头。她知道不能再往回了。少女也想回头，想再一次回到父亲的拥抱中，回到那早已碎裂的，温暖的家中。但她也知道，再回头的话，便辜负了所有人对她的期望。再回头的话，便辜负了自己对她的期望。再回头的话，便失去了那能够改变一切的未来。</p>
+	<p>“是吗？”少女的父亲笑了。“挺好的啊。代我向她，她和他们问好。祝你，一路顺风。”</p>
+	<p>少女稍微转过了头，用余光看向了对自己微笑的父亲，看向了那个在光中逐渐消散的父亲。“嗯。再见了，臭老爸。”</p>
+
+        <!-- 底部翻页按钮 -->
+        <nav class="pagination">
+<a href = "main_1_6_20.html">&laquo; 上一段</a>
+<a href = "main_1_6_22.html">下一段 &raquo;</a>
+        </nav>
+    </main>
+
+</body>
+</html>
