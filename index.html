@@ -1,217 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khaeoz_Vault</title>
   <link rel="icon" type="image/x-icon" href="Khaeoz.png">
   <style>
+    :root {
+      --sky-deep: #0c4a6e;
+      --sky-primary: #0284c7;
+      --sky-accent: #38bdf8;
+      --sky-tint: #f0f9ff;
+      --sky-wash: #e0f2fe;
+      --sky-border: #bae6fd;
+      --surface-white: #ffffff;
+      --ink-main: #0f172a;
+      --ink-muted: #475569;
+      --tooltip-bg: #0c4a6e;
+      --tooltip-ink: #f8fafc;
+      --shadow-soft: 0 8px 24px rgba(2, 132, 199, 0.08);
+      --shadow-pop: 0 12px 28px rgba(12, 74, 110, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Microsoft YaHei", "微软雅黑", STXihei, "华文细黑", sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
-      color: #333;
+      background: linear-gradient(180deg, var(--sky-wash) 0%, var(--sky-tint) 300px, #f8fcff 100%);
+      color: var(--ink-main);
+      line-height: 1.65;
     }
 
-    /* 1. 悬停文本的基础样式 */
-        .tooltip-text {
-            position: relative;          /* 用于相对定位提示框 */
-            display: inline-block;
-            color: #0066cc;              /* 文字颜色 */
-            cursor: pointer;             /* 鼠标变为手势 */
-        }
-        .tooltip-text:hover {
-          text-decoration: underline;
-        }
-
-        /* 2. 隐藏的提示文本框（默认不可见） */
-        .tooltip-text .tooltip-box {
-            visibility: hidden;
-            opacity: 0;
-            width: 800px;                 /* 提示框宽度 */
-            background-color: #333333;    /* 背景深色 */
-            color: #ffffff;               /* 文字浅色 */
-            text-align: left;
-            padding: 8px 12px;
-            border-radius: 6px;           /* 圆角 */
-            font-size: 13px;
-            
-            /* 绝对定位在文本上方 */
-            position: absolute;
-            z-index: 10;
-            bottom: 125%;                 /* 显示在文本上方 */
-            left: 50%;
-            transform: translateX(-50%);  /* 居中对齐 */
-
-            /* 渐变过渡动画效果 */
-            transition: opacity 0.3s, visibility 0.3s;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* 阴影 */
-        }
-
-        /* 3. 提示框底部的小三角指示器 */
-        .tooltip-text .tooltip-box::after {
-            content: "";
-            position: absolute;
-            top: 100%;                    /* 位于提示框底部 */
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #333333 transparent transparent transparent;
-        }
-
-        /* 4. 鼠标悬停时显示提示框 */
-        .tooltip-text:hover .tooltip-box {
-            visibility: visible;
-            opacity: 1;
-        }
+    /* Soft, rounded floating sky-blue top bar */
+    .top-bar-wrap {
+      max-width: 1220px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+    }
 
     header {
-      background: #2c3e50;
-      padding: 15px 20px;
-      color: white;
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 62%, var(--sky-accent) 100%);
+      padding: 10px 22px;
+      color: var(--surface-white);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
     }
-    header h1 {
+
+    .profile h1 {
       margin: 0;
-      font-size: 1.5em;
+      font-size: 1.38em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.4px;
     }
 
     header img {
-      width: 20%;          /* responsive percentage */
-      max-width: 200px;    /* upper limit */
-      min-width: 100px;    /* lower limit */
-      height: auto;        /* keep aspect ratio */
-      border-radius: 50%;  /* round avatar */
-      margin-top: 10px;
+      width: 42px;
+      height: 42px;
+      max-width: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background-color: var(--surface-white);
+      flex-shrink: 0;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     nav a {
-      color: white;
+      color: var(--surface-white);
       text-decoration: none;
-      margin-left: 20px;
+      padding: 6px 15px;
+      border-radius: 999px;
       font-weight: bold;
+      font-size: 0.92em;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      transition: background-color 0.2s ease, transform 0.2s ease;
     }
+
     nav a:hover {
-      text-decoration: underline;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
     }
+
+    /* Main Content Column (leaves clear room for right side panel on desktop) */
     .container {
-      max-width: 900px;
-      margin: 40px auto;
+      max-width: 780px;
+      margin: 28px auto 56px;
       padding: 0 20px;
     }
-        .sidebar-container {
-            position: fixed;
-            top: 25%;
-            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
-            left: 84%;
-            width: 12%; 
-            
-            background-color: #fafafa;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            padding: 20px 15px;
-            
-            overflow-y: auto; /* 允许内部索引内容滚动 */
-            z-index: 10;     /* 保证处于表层 */
-        }
 
-        .sidebar-container h3 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #444;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #0066cc;
-        }
+    section {
+      background: var(--surface-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 16px;
+      padding: 26px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-soft);
+    }
 
-        .sidebar-container ul {
-            list-style: none;
-        }
-
-        /* 索引基础链接通用样式 */
-        .sidebar-container a {
-            color: #555;
-            text-decoration: none;
-            display: block;
-            border-radius: 4px;
-            transition: all 0.2s;
-            line-height: 1.4;
-        }
-
-        .sidebar-container a:hover {
-            background-color: #e6f7ff;
-            color: #0066cc;
-        }
     h2 {
-      color: #2c3e50;
-      margin-top: 40px;
+      color: var(--sky-deep);
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--sky-wash);
+      font-size: 1.3em;
     }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Standard Hover Tooltips */
+    .tooltip-text {
+      position: relative;
+      display: inline-block;
+      color: var(--sky-primary);
+      cursor: pointer;
+    }
+
+    .tooltip-text:hover {
+      text-decoration: underline;
+    }
+
+    .tooltip-text .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      width: min(520px, 80vw);
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-ink);
+      text-align: left;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+      position: absolute;
+      z-index: 60;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      box-shadow: var(--shadow-pop);
+      border: 1px solid rgba(186, 230, 253, 0.4);
+    }
+
+    .tooltip-text .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip-text:hover .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Books / Novels Showcase Cards */
     .books {
-      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
     }
+
     .novel {
-      background: #fff;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: var(--surface-white);
+      padding: 18px 22px;
+      border-radius: 14px;
+      border: 1px solid var(--sky-border);
+      border-left: 4px solid var(--sky-accent);
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .novel:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .novel h3 {
+      margin: 0 0 8px;
+      color: var(--sky-deep);
+      font-size: 1.12em;
+    }
+
     .novel a {
-      color: #3498db;
+      display: inline-block;
+      margin-top: 6px;
+      color: var(--sky-primary);
       text-decoration: none;
       font-weight: bold;
     }
+
     .novel a:hover {
+      color: var(--sky-deep);
       text-decoration: underline;
     }
+
+    /* Update Notes Side Panel pinned to the right on desktop */
+    .sidebar-container {
+      position: fixed;
+      top: 108px;
+      right: 18px;
+      width: 230px;
+      background-color: var(--surface-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow-soft);
+      padding: 15px 15px 17px;
+      overflow: visible;
+      z-index: 35;
+      font-size: 0.85em;
+    }
+
+    .sidebar-container h3 {
+      font-size: 15px;
+      margin: 0 0 10px;
+      color: var(--sky-deep);
+      padding-bottom: 7px;
+      border-bottom: 2px solid var(--sky-accent);
+    }
+
+    .sidebar-container p {
+      margin-bottom: 10px;
+      color: var(--ink-muted);
+      line-height: 1.5;
+    }
+
+    .sidebar-container p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sidebar-container .tooltip-text {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* Keep tooltip inside viewport on right edge without clipping */
+    .sidebar-container .tooltip-text .tooltip-box {
+      width: 220px;
+      max-width: calc(100vw - 32px);
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+      left: auto;
+      right: 0;
+      bottom: calc(100% + 8px);
+      transform: none;
+      z-index: 90;
+    }
+
+    .sidebar-container .tooltip-text .tooltip-box::after {
+      left: auto;
+      right: 24px;
+      margin-left: 0;
+    }
+
+    /* Contact Links */
+    #contact a {
+      color: var(--sky-primary);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    #contact a:hover {
+      text-decoration: underline;
+    }
+
+    /* Soft Rounded Footer */
+    .footer-wrap {
+      max-width: 1220px;
+      margin: 44px auto 22px;
+      padding: 0 18px;
+    }
+
     footer {
-      margin-top: 60px;
-      padding: 20px;
-      background: #2c3e50;
-      color: white;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 100%);
+      color: var(--surface-white);
       text-align: center;
+      font-size: 0.9em;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 22px rgba(2, 132, 199, 0.14);
+    }
+
+    /* Keep sidebar to the side on standard desktop/laptop screens; only stack on narrow screens */
+    @media (max-width: 900px) {
+      .container {
+        max-width: 820px;
+      }
+
+      .sidebar-container {
+        position: static;
+        width: auto;
+        max-width: 820px;
+        margin: 0 auto 24px;
+      }
+
+      .sidebar-container .tooltip-text .tooltip-box {
+        left: 0;
+        right: auto;
+      }
+
+      .sidebar-container .tooltip-text .tooltip-box::after {
+        left: 24px;
+        right: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      section {
+        padding: 20px;
+        border-radius: 14px;
+      }
+
+      header {
+        border-radius: 20px;
+        padding: 10px 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <div class="profile">
-      <!-- Replace profile.jpg with your own image or an online link -->
-      
-      <h1><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</h1>
-    </div>
-    <nav>
-      <a href="#about">啊咧咧？</a>
-      <a href="#books">搜刮</a>
-      <a href="#contact">尝试踢门</a>
-    </nav>
-  </header>
+  <!-- Soft Rounded Header -->
+  <div class="top-bar-wrap">
+    <header>
+      <div class="profile">
+        <h1><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</h1>
+      </div>
+      <nav>
+        <a href="#about">啊咧咧？</a>
+        <a href="#books">搜刮</a>
+        <a href="#contact">尝试踢门</a>
+      </nav>
+    </header>
+  </div>
 
   <!-- Main Content -->
   <div class="container">
     <section id="about">
       <h2>哇！快看，这里是哪儿？</h2>
       <p>嘶——似乎是书库啊……等等，你是谁？</p>
-      <p > 
-        <span class="tooltip-text" style = "color: #a5000e">
-          ==锟斤拷迎锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷JCOB锟侥诧拷锟斤拷锟揭★拷锟斤拷锟斤拷锟斤拷锟介，锟斤拷锟介，锟斤拷锟介。锟斤拷锟斤拷停锟斤拷锟斤拷锟节硷拷锟节ｏ拷锟斤拷锟斤拷锟斤拷锟斤拷锟解翻锟斤拷锟斤拷锟斤拷锟斤拷榧拷锟�==
-        <span class="tooltip-box">看来是编码出问题了。你连忙翻开了对方体内的文件，用正确的编码形式打了开来。<br>
-          原本的文本是这样的：“欢迎来到混沌理论JCOB的藏书室。这里有书，和书，和书。在您停留的期间内，您可以随意翻阅这里的书籍。”<br>
-          做这个的人到底有多闲啊？</span>
+      <p>
+        <span class="tooltip-text" style="color: #a5000e">
+          ==锟斤拷迎锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷JCOB锟侥诧拷锟斤拷锟揭★拷锟斤拷锟斤拷锟斤拷锟介，锟斤拷锟介，锟斤拷锟介。锟斤拷锟斤拷停锟斤拷锟斤拷锟节硷拷锟节ｏ拷锟斤拷锟斤拷锟斤拷锟斤拷锟解翻锟斤拷锟斤拷锟斤拷锟斤拷榧拷锟==
+          <span class="tooltip-box">看来是编码出问题了。你连忙翻开了对方体内的文件，用正确的编码形式打了开来。<br>
+            原本的文本是这样的：“欢迎来到混沌理论JCOB的藏书室。这里有书，和书，和书。在您停留的期间内，您可以随意翻阅这里的书籍。”<br>
+            做这个的人到底有多闲啊？</span>
         </span>
       </p>
-        <!-- 欢迎来到混沌理论JCOB的藏书室。这里有书, 和书, 和书. 在您停留的期间内, 您可以随意翻阅这里的书籍. -->
     </section>
 
+    <!-- Update Notes Side Panel -->
     <aside class="sidebar-container">
       <h3>更新公告</h3>
-      <span class="tooltip-text" style = "color: #a5000e">
+      <p>20261124 - 修改了页面整体排版。《星空下》不小心被我炸了，目前在维护中；但你们如果直接输入链接的话有可能还能找到。《当你迷茫》已经在全力更新了，但肯定得等到十二月了。目前里面有些错误链接。</p>
+      <span class="tooltip-text" style="color: #a5000e">
         <p>20261020 - 待命名（第一篇）：已更新内容</p>
-        <span class="tooltip-box" style = "width: 150px; font-size: 7px">
+        <span class="tooltip-box" style="width: 150px; font-size: 7px">
           因为和《当你迷茫》是同一个世界观的，为了防止剧透，我已经帮你把一些内容删了……不用担心哦，删的不多。哼，好好感谢我吧。<br>
           ——Khae Alter 2026.10.20
         </span>
@@ -234,28 +410,28 @@
         </div>
 
         <div class="novel">
-          <h3>待命名（上卷）</h3>
+          <h3>星空下的你，如今在做什么？（上卷）</h3>
           <p>你得到了好几卷残卷——不对，上面的字还在不断的变多，而且每次变化的位置都还在变。难道作者还在写吗？</p>
           <p>你勉强从好像是封面的页面上隐约看到了一行字：不定期不持续更新中，不按顺序更新，梦到哪儿写到哪儿。</p>
           <p>所以说……作者到底在干啥？为啥要跳着写？</p>
-          <p style = "color:#ff0000">贴心的Khae小姐的备注：嘛，前期是会比较无聊啦……或者说，会更偏王道一点？要到后面开始解谜起来才算真的有意思——可惜，作者大人不知道为什么没把这些内容上传……虽中后篇的内容目前也只有一篇，但这不是他不愿意放上来的理由。</p>
-          <a href="main_1_0.html" target="_blank">点击查阅→</a>
+          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">点击查阅→</a>
         </div>
-
-       
-
       </div>
     </section>
 
     <section id="contact">
-      <h2><span class="tooltip-text" style = "color: #a5000e">
-        ==锟斤拷要锟斤拷系锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷去锟斤拷锟斤拷锟斤拷锟铰凤拷锟斤拷锟斤拷==
-        <span class="tooltip-box" style = "width:300px"><p style = "font-weight: normal">
-          你又一次用正确的编码打开了对话文本。<br>
-          “需要联系书库的主人吗？您可以去试试以下方法。”<br>
-          说实话，玩过一次的笑话就不好玩了。</p>
+      <h2>
+        <span class="tooltip-text" style="color: #a5000e">
+          ==锟斤拷要锟斤拷系锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷去锟斤拷锟斤拷锟斤拷锟铰凤拷锟斤拷锟斤拷==
+          <span class="tooltip-box" style="width: 300px">
+            <p style="font-weight: normal">
+              你又一次用正确的编码打开了对话文本。<br>
+              “需要联系书库的主人吗？您可以去试试以下方法。”<br>
+              说实话，玩过一次的笑话就不好玩了。
+            </p>
+          </span>
         </span>
-      </span></h2>
+      </h2>
 
       <p>感觉不会有有用……？</p>
       <p>邮件：mikecraft666.xue@gmail.com</p>
@@ -264,8 +440,10 @@
   </div>
 
   <!-- Footer -->
-  <footer>
-    <p>© 2026 Epors-Usr | Powered by GitHub Pages</p>
-  </footer>
+  <div class="footer-wrap">
+    <footer>
+      <p>© 2026 Epors-Usr | Powered by GitHub Pages</p>
+    </footer>
+  </div>
 </body>
 </html>

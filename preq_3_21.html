@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>当你迷茫时，请在世界的尽头唱响这首歌</title>
+  <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+  <style>
+    :root {
+      --sky-deep: #0c4a6e;
+      --sky-primary: #0284c7;
+      --sky-accent: #38bdf8;
+      --sky-tint: #f0f9ff;
+      --sky-wash: #e0f2fe;
+      --sky-border: #bae6fd;
+      --paper-white: #ffffff;
+      --ink-reading: #1e293b;
+      --ink-muted: #64748b;
+      --tooltip-bg: #0c4a6e;
+      --tooltip-ink: #f8fafc;
+      --shadow-sheet: 0 6px 24px rgba(12, 74, 110, 0.08);
+      --shadow-toc: 0 10px 26px rgba(12, 74, 110, 0.14);
+      --shadow-pop: 0 12px 26px rgba(12, 74, 110, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+      background-color: var(--sky-tint);
+      color: var(--ink-reading);
+      line-height: 1.85;
+    }
+
+    /* Soft Rounded Top Bar */
+    .top-bar-wrap {
+      max-width: 1220px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+    }
+
+    header.site-header {
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 65%, var(--sky-accent) 100%);
+      padding: 10px 22px;
+      color: var(--paper-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
+    }
+
+    header.site-header h1 {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+
+    header.site-header a {
+      color: var(--paper-white);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header.site-header a:hover {
+      text-decoration: underline;
+    }
+
+    header.site-header img {
+      width: 38px;
+      height: 38px;
+      max-width: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: var(--paper-white);
+    }
+
+    /* Stage with centered narrow reading sheet & slightly overlapping TOC sidebar */
+    .reader-stage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
+
+    /* Slightly smaller TOC sidebar overlapping left margin of the text panel */
+    .toc-sidebar {
+      width: 18.5%;
+      min-width: 185px;
+      max-height: 54vh;
+      margin-top: 44px;
+      margin-right: -32px; /* Overlaps the left edge of .reader-sheet without reaching text */
+      position: sticky;
+      top: 96px;
+      overflow-y: auto;
+      background-color: var(--sky-wash);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      box-shadow: var(--shadow-toc);
+      z-index: 20;
+      font-size: 0.9em;
+    }
+
+    .toc-sidebar h3 {
+      font-size: 14px;
+      color: var(--sky-deep);
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--sky-primary);
+    }
+
+    .toc-sidebar ul {
+      list-style: none;
+    }
+
+    .toc-sidebar a {
+      color: var(--ink-reading);
+      text-decoration: none;
+      display: block;
+      border-radius: 5px;
+      transition: background-color 0.18s ease, color 0.18s ease;
+      line-height: 1.35;
+    }
+
+    .toc-sidebar a:hover {
+      background-color: var(--paper-white);
+      color: var(--sky-primary);
+    }
+
+    .index-title-l1 {
+      font-size: 12.5px;
+      font-weight: bold;
+      margin-top: 8px;
+      margin-bottom: 3px;
+    }
+
+    .index-title-l1 > a {
+      padding: 5px 6px;
+      color: var(--sky-deep);
+    }
+
+    .index-sub-list {
+      padding-left: 10px;
+      border-left: 2px solid var(--sky-accent);
+      margin-left: 6px;
+      margin-bottom: 6px;
+    }
+
+    .index-title-l2 {
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .index-title-l2 > a {
+      padding: 3px 6px;
+      color: var(--ink-muted);
+    }
+
+    /* Centered, compact white reading panel with generous outer proportions */
+    .reader-sheet {
+      width: 54%;
+      min-width: 320px;
+      background-color: var(--paper-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sheet);
+      padding: 38px 42px 38px 54px; /* Extra left padding clears the overlapping TOC box */
+      position: relative;
+      z-index: 10;
+    }
+
+    .chapter-header {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--sky-border);
+    }
+
+    .chapter-header h1 {
+      font-size: 24px;
+      color: var(--sky-deep);
+      letter-spacing: 1px;
+    }
+
+    .story-body p {
+      margin-bottom: 16px;
+      text-align: justify;
+      font-size: 15.5px;
+    }
+
+    /* Inline Hover Tooltips */
+    .tooltip-text {
+      position: relative;
+      display: inline-block;
+      color: var(--sky-primary);
+      cursor: pointer;
+    }
+
+    .tooltip-text:hover {
+      text-decoration: underline;
+    }
+
+    .tooltip-text .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      width: max-content;
+      max-width: 300px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-ink);
+      text-align: left;
+      padding: 8px 12px;
+      border-radius: 8px;
+
+      /* Reset inherited heading/superscript styles */
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      white-space: normal;
+
+      position: absolute;
+      z-index: 999;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      box-shadow: var(--shadow-pop);
+    }
+
+    .tooltip-text .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip-text:hover .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Footnotes Block */
+    .footnotes {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--sky-border);
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .footnotes p {
+      margin-bottom: 10px;
+    }
+
+    /* Bottom Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--sky-border);
+    }
+
+    .pagination a {
+      display: inline-block;
+      padding: 9px 18px;
+      background-color: var(--sky-tint);
+      color: var(--sky-primary);
+      border: 1px solid var(--sky-border);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .pagination a:hover {
+      background-color: var(--sky-primary);
+      color: var(--paper-white);
+      border-color: var(--sky-primary);
+    }
+
+    @media (max-width: 960px) {
+      .reader-stage {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toc-sidebar {
+        width: 100%;
+        max-height: 240px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 18px;
+        position: static;
+      }
+
+      .reader-sheet {
+        width: 100%;
+        padding: 28px 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header.site-header {
+        border-radius: 20px;
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODULE 1: SOFT ROUNDED TOP HEADER -->
+  <div class="top-bar-wrap">
+    <header class="site-header">
+      <nav>
+        <h1><a href="index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+      </nav>
+    </header>
+  </div>
+
+  <div class="reader-stage">
+
+    <!-- MODULE 2: COMPACT OVERLAPPING TABLE OF CONTENTS SIDEBAR -->
+    <aside class="toc-sidebar">
+      <h3>目录索引</h3>
+      <ul>
+	<li class="index-title-l1">
+	<a href = "preq_0_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_1.html">序奏 永夜与月之光辉</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_1_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_1_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_1_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_1_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_1_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_1_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_1_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_1_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_1_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_1_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_1_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_1_11.html>十二</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_2.html">呈示 星空之下的世界</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_2_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_2_3.html>四【存在待更新内容】</a></li>
+		<li class="index-title-l2"><a href=preq_2_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_2_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_2_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_2_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_2_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_2_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_2_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_2_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_2_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_2_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_24.html>二十五【有可能要改】</a></li>
+		<li class="index-title-l2"><a href=preq_2_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_28.html>二十九</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_3.html">发展 蔚蓝倒映出繁星</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_3_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_3_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_3_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_3_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_3_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_3_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_3_6.html>七【战斗场面即使我都已经做过减负了还是憋不出来，暂时跳过吧】</a></li>
+		<li class="index-title-l2"><a href=preq_3_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_3_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_3_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_3_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_3_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_3_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_3_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_3_15.html>十六【暂略】</a></li>
+		<li class="index-title-l2"><a href=preq_3_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_3_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_3_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_3_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_3_20.html>二十一【更新中】</a></li>
+		<li class="index-title-l2"><a href=preq_3_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_22.html>二十三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_4.html">再现 少女触及了天空</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_4_0.html>一</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_5.html">后记</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_5_2.html>三【施工中】</a></li>
+		<li class="index-title-l2"><a href=preq_5_3.html>四</a></li>
+	</ul>
+	</li>
+
+
+      </ul>
+    </aside>
+
+    <!-- MODULE 3: CENTERED READING SHEET -->
+    <main class="reader-sheet">
+
+      <!-- 3A. Chapter Title -->
+      <header class="chapter-header">
+	<h1>二十二</h1>
+
+      </header>
+
+      <!-- 3B. Chapter Paragraphs -->
+      <article class="story-body">
+	<p>蓝色，蓝色。一片蓝色的世界。那不是女孩第一次在睁开眼后看到这样子的世界——毕竟，很多年前也有过很多次——但这的确是她第一次看到如此混乱的区块。“那个，深潜成功是成功了，但我们现在在哪里？以前从来没标定过这个区块啊。”周围漂浮着各种奇形怪状的物体，闪烁着，闪烁着。她知道，那些是游离的数据。“倒不如说，为什么她会选择没标定过的区块当作超深潜的测试对象啊！”</p>
+	<p>“老师，让我看看。”她身旁的男子似乎是回过了神，检阅着手中的终端。“根据周围的数据进行比对的话，以太之海的这个区块层是大概5500年前左右的数据。也就是公司前1000年到1100年左右<span class = "tooltip-text"><sup>8</sup> 
+		<span class = "tooltip-box">作者注：纪年法在「公司后」进行了一次迭代，一年的时长不一样。前面的5500年是他们当下的纪年法里的年，而后面的1000到1100年则是地球年。</span></span>
+	。”</p>
+	<p>“啊，是第二次寰宇战争末期啊……不是个好时代呢。”女孩叹了口气，随后皱起了眉头。“奇怪，以太波动比我预想的要稳定许多。这里的虚构能量浓度远比正常情况高，就算考虑到了我体内的外溢也不应该会这样才对。以及……”她回过了头，似乎是意识到了什么。“我和你说过多少遍了，不要叫我老师。”</p>
+	<p>男子点了点头。“根据浓度趋势的话，应该是从——”</p>
+	<p>“不用，我已经找到了。你忘记了吗？我能直接感受到虚构能量趋势。从浓度来说的话，应该至少是高等使骸核心。”她向前走了过去。</p>
+	<p>“该说真不愧是老师吗。”他回答道。“不过，应该只能是高等使骸核心吧。不然的话——那四个里一个在您这里，一个在预言馆，一个还在银河的另一头，最后一个只剩下碎片了。只能是哪只使骸不小心沉入了以太之海里吧。”</p>
+	<p>“嘛，也不——你爷爷没和你讲过你姑奶奶<span class = "tooltip-text"><sup>9</sup> 
+		<span class = "tooltip-box">指的是爷爷的姐姐。然而，通用语的底层逻辑大概率会和英语比较相似，所以应该不会出现“姑奶奶”这种称呼。这里更准确的用语应该是“祖父的姐妹”。但是，我在用中文进行写作，既然有准确的描述，那么就用呗。</span></span>
+	还在ETM-A7时的事吗？”女孩有些许疑惑。</p>
+	<p>男子似乎没有听懂对方为何会突然问这个。“基本没讲过……怎么了吗？”</p>
+	<p>“没什么。只是在想，使骸要沉到这么深的地方，还要保持活性，有点……”她停了下来，似乎是感到有些诧异。“抱歉，是我看错了吗？源头那边是躺了个人吗？”</p>
+	<p>她的同伴摇了摇头。“没有，老师。那里的确是躺了个人——至少，看起来像是人，而且还没有受到以太化。不应该啊……”</p>
+	<p>“你当心一点，有可能是人形使骸。”数根炮管忽然出现在了女孩身后，对准了躺在地面上的少女……如果，那蓝色发光的实体能被称为地面的话。“等等，这虚构能量纹路，我见过。是虚构术式，而且这么强烈的个人风格……啊，这么说来，他确实是这个时代的人呢。这次我还记得，你总不能再骂我了吧。”</p>
+	<p>“老师，怎么了吗？”</p>
+	<p>女孩叹了口气。“没什么。不过，有个好消息和一个坏消息，你想先听哪个？”</p>
+	<p>男子耸了耸肩。“那就，先听坏消息吧。”</p>
+	<p>女孩点了点头。“好的——好消息是，这孩子不是人形使骸；或者说，就算是，那么也是能正常交流的存在。”随即，她又捂住了自己的额头。“坏消息呢，则是我们现在光是在这里有可能会对世界树的稳定性造成干扰。”</p>
+	<p>“老师说的是爷爷提出的连续性假说是吧。但那只是个假说吧？况且，证明世界树稳定性的不正是老师您吗？”</p>
+	<p>“嘛，这个就要牵扯到很复杂的理论知识了，这些你去问……你是按照她的证件信息叫她爱茵（Ein）是吗？总而言之，很遗憾，你爷爷提出的假说一定是正确的，以太之海里的时间就是一个可以正常通行的维度。”女孩摇了摇头，似乎是有些失望。“不过，到现在都还没成功复现过当时的经历就是了。而至于后者嘛，虽说那条分杈从因果上来说的确是——”</p>
+	<p>男子指了指女孩身后。“老师，您背后……”</p>
+	<p>“嗯？怎么——”</p>
+	<p><br></p>
+	<p>薇莉塔的意识有些模糊。她隐约记得，在救下了忒菈姆后，自己落入了以太之海污染区。所以，现在的她果然在以太之海里吧？她的意识有些模糊，有点想不起来了。好像，要完成重要的事。</p>
+	<p>“……你爷爷提出的假说一定是……”</p>
+	<p>很吵，很吵。从刚才开始，就有两个陌生的声音在身边吵个不停。原本，她想再休息一下的，但这样子的话，根本就休息不了。</p>
+	<p>于是，少女睁开了眼。</p>
+	<p><br></p>
+	<p>“……那条分杈从因果……”</p>
+	<p>蓝色的世界。少女从没见过这样的景象。上方好像有东西在闪烁着，像星空，又想在太阳下那波光粼粼的海面。从睡梦中醒来后，她有点想哭。于是，眼前的世界模糊了。</p>
+	<p>她抬起了身子，想搞明白自己到底在哪里。</p>
+	<p>“老师，您背后……”</p>
+	<p>薇莉塔顺着声音向着身旁望去。</p>
+	<p>“嗯？怎么——”</p>
+	<p>她看到了对准自己的炮口。数根炮口，对准了她。 “啊啊啊啊啊！你们，你们是谁，我在哪儿？” 是她没见过的型号，而且似乎要比她见过的所有型号都高级。她向后退了几步。“你们……要对我做什么？”</p>
+	<p>“糟糕，聊太久了，她醒来了。” 女孩尴尬地笑了笑，随后弯下了腰，笑眯眯地看向了那坐在地上的少女。那数根炮管在一瞬间之中化作了蓝色的光芒。“不用担心，我们不会对你做任何事情。不过，我还需要确认一下几件事。你的名字是不是叫做薇莉塔？”</p>
+	<p>“诶？你怎么知道？你认识我吗？”薇莉塔摇了摇头。“抱歉，我想不起来你叫什么了，是常有的事啦，我最近——”</p>
+	<p>女孩笑了笑。“果然嘛。啊，不用道歉，你不认识我。但我认识谬萨，所以认出你来了。”</p>
+	<p>“谬萨？所以，你们是反抗军的人吗？你们能——”</p>
+	<p>“薇莉塔小姐，我明白你很紧张，但还请先冷静。”女孩的声音温柔了下来。她蹲了下来，摸了摸少女的头，似乎是在安抚她一般。“首先，我和我的……那个，我该称你为学生吗？好像不对吧……总之，我们两不完全是反抗军的人。真要说的话，我拆解并改良过谬萨的研究，包括他那最高杰作。就以目前的处境，我们能够为你提供协助。”</p>
+	<p>“那么，我果然是沉到以太之海里了吧。”少女的笑容上尽显着苦涩。“但，既然你们不紧不慢地站在这里，说明你们有脱离的方法，对吧？”</p>
+	<p>“离开以太之海的方法是有的——但你和我们下来的方法不一样。我们的方法对你不管用。就算管用，也没法让你回到谬萨身边，而且是一辈子的那种。”对方叹了口气。</p>
+	<p>听到这里，薇莉塔不知道该说些什么好。她紧紧地抱住了自己。明明定下了约定，明明有试图去追赶他的身影，为什么……“你想说的是，我被困在这里了？”</p>
+	<p>“诶，此言差矣。要让你回去，也是有办法的。”女孩笑了笑。“毕竟，寻常的人类如果落入了以太之海中，早就被以太化了。但你却没有，这都要归结于你体内的那颗核心。”</p>
+	<p>“这样子啊，太好了……要我——诶？”少女从对方的话语中嗅到了几分不应出现的话语。对她来说，自己的身份在几年的相处下，早已变得理所当然了，但是……她警惕地向后爬了退了几步，随后举起了手枪。枪口对准了那蓝发的女孩。“谬萨从没有和任何人说过我的身份……你们到底是谁？”</p>
+	<p>对方叹了口气。“啊，糟糕……踩到雷了。”她打了一下响指，然后——数根炮管忽然间又一次包围了少女。“总之，听我说的去做，你就能活下去，你就能活着见到谬萨。就这么简单。不需要你干任何会被谴责的事情，自己选吧。”</p>
+	<p>“啧。”薇莉塔抛下了手枪，将双手举了起来。“你说吧。”</p>
+	<p>炮管消失了。“很高兴你能理解！请先站在那里，别动。” 女孩手中出现了一支笔一样的装置，少女依稀记得好像见过。女孩将装置对准了少女的胸口，随后身上忽然亮起了金色的纹路。纹路闪烁着，闪烁着，然后逐渐变得暗淡。</p>
+	<p>“你这是——”</p>
+	<p>对方笑了笑。“这是紧急情况，之后代我向谬萨道歉吧。这样子的话，就算是暂时解除限制了呢。你的能力源自……嗯，世界的四条延伸之一。你应该也发现了吧，只要你想要，就可以做到。”</p>
+	<p>薇莉塔想起了谬萨很久前说过的话。“只要愿望足够炽烈……就什么都做得到？”</p>
+	<p>“没错，虚构能量会应你的愿望扭曲世界的法则。即使在这里……嘶，怎么解释呢？”女孩似乎犹豫了一下。“你应该没有以太能相关的知识……你理解成世界的复位面即可。在这里，虚构能量依然能够回应你的愿望。”</p>
+	<p>少女看向了天空——如果那能称为天空的话。蓝色的天空，闪烁着的天空。“所以，要依靠我的能力回到现实？”</p>
+	<p>“嗯。还是说，你觉得自己的愿望还不够炽烈？你不是想再一次见到谬萨，你不是还有很多话想和谬萨说吗？”</p>
+	<p>她想回去——她想见到谬萨，她想陪伴在对方身边。因为对方也有着炽热的愿望，因为她想看到对方完成那炽热的愿望。“……你为什么能明白？为什么可以明白我心里在想的东西？”眼前的世界模糊了。泪水，是泪水。泪水将天空上的光芒晕了开来，化作了闪烁着的光圈。</p>
+	<p>在模糊的世界里，少女看到女孩露出了笑容——真诚的笑容。“这种事情，不用想就能明白啦。毕竟，这种情感是所有人都拥有的，属于我们的情感。”</p>
+	<p>“但，我不是普通人——我甚至不是人类。”眼泪沿着脸颊慢慢地滴了下来，但薇莉塔并没有在意。她想知道那个答案。</p>
+	<p>“是吗？你再想想，我有一次说过你不是人吗？如果你都不能算是人的话，那么我更不能算作人类了。但即使如此，我从未相信过我自己不是人类。所以，我相信你一定也是。”</p>
+	<p>“但是，那个……”</p>
+	<p>“说到底，什么才能算人类？智人种？”女孩似乎有些生气。“我想不是——自神代以来，我们对于「人」的定义早就拓延了不少。你心中的那份情感，那有关爱，有关自我，有关希望的情感，正是你身而为人的证明。” 女孩慢慢蹲了下来，捂住了少女的胸口。脸凑的有点近了。</p>
+	<p>薇莉塔能感受到对方掌中的温度。“我不明白。”</p>
+	<p>“你会明白的，你一定会明白。”然后，女孩抱住了她。“在那之前，只要将你的心愿封装好，保护好，就够啦。”</p>
+	<p>因为，自从少女触摸天空的那一刻起，她一定就已经是人了。</p>
+	<p><br></p>
+	<p>“啊，聊了有点久了。该送你回去了——你还想见到谬萨呢，不是吗？”在沉默了许久后，女孩最终还是松开了拥抱。她用左手盖住了少女的眼睛，随后，在少女的耳边低语道：“想象一个通往现实，通往谬萨的通路。想象自己一直向前面走去。剩下的，交给我就行。” 女孩打了个响指，一个空洞便忽然出现在了覆盖着三人的蓝色之上。“别担心，我的力量会保护你的。”然后，蓝色的屏障从四周包裹住了少女。</p>
+	<p>“那个，我们还会再见吗？”薇莉塔没有睁开双眼。</p>
+	<p>“哈哈，有点难了，大抵是不会了。”</p>
+	<p>“那么，谢谢。谢谢你。”她能感到自己不断向上飘去，顺着通道，向上飘去。</p>
+	<p>“没事，不如说，我才应该谢谢你才对。拜拜！”</p>
+	<p>听到这里，少女还是没忍住睁开眼。“等等，那是什么意思！”</p>
+	<p>但女孩只是看着她，面带笑容，挥手向她道别。“拜拜。”</p>
+	<p>上升的速度越来越快，越来越快。“快点回答我，是什么——”</p>
+	<p><br></p>
+	<p>在薇莉塔的身影彻底消失后，女孩身旁的男子转头看向了他的老师。“老师，您透露给她的是不是有点多了？不是你自己说的我们的存在有可能会影响世界树的稳定性的吗？”他似乎有些担心。</p>
+	<p>“应该没事的吧，应该。况且，我也一直想找个机会和她聊一聊，毕竟她也算是我的姐姐呢，即使那只是个拟态人格。”女孩笑了笑。她没有看向男子，而只是继续望着那湛蓝色的天空。“薇莉塔，你会抵达那个你所期望的结局的，一定会。所以，你一定要幸福啊。”</p>
+	<p>“所以，到头来，她到底是谁？”</p>
+	<p>“所以我才让你好好去学习历史啊！鑫（Chei）她没有教你吗？”终端忽然响了起来。“喂？哦，鑫啊。抱歉啦，我们这里遇到了一些意料之外的状况，但已经解决了。你就原谅我嘛。你听我说哦，你根本不会猜到我们在这个区块里遇到了谁……”</p>
+
+      </article>
+
+      <!-- 3C. Footnotes Block -->
+      <section class="footnotes" aria-label="注释">
+	<p></br>	<p><sup>8</sup>作者注：纪年法在「公司后」进行了一次迭代，一年的时长不一样。前面的5500年是他们当下的纪年法里的年，而后面的1000到1100年则是地球年。<p>
+	<p><sup>9</sup>指的是爷爷的姐姐。然而，通用语的底层逻辑大概率会和英语比较相似，所以应该不会出现“姑奶奶”这种称呼。这里更准确的用语应该是“祖父的姐妹”。但是，我在用中文进行写作，既然有准确的描述，那么就用呗。<p>
+<p>
+      </section>
+
+      <!-- 3D. Chapter Navigation -->
+      <nav class="pagination" aria-label="章节翻页">
+<a href = "preq_3_20.html">&laquo; 上一段</a>
+<a href = "preq_3_22.html">下一段 &raquo;</a>
+      </nav>
+
+    </main>
+  </div>

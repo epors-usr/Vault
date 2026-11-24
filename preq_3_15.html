@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>当你迷茫时，请在世界的尽头唱响这首歌</title>
+  <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+  <style>
+    :root {
+      --sky-deep: #0c4a6e;
+      --sky-primary: #0284c7;
+      --sky-accent: #38bdf8;
+      --sky-tint: #f0f9ff;
+      --sky-wash: #e0f2fe;
+      --sky-border: #bae6fd;
+      --paper-white: #ffffff;
+      --ink-reading: #1e293b;
+      --ink-muted: #64748b;
+      --tooltip-bg: #0c4a6e;
+      --tooltip-ink: #f8fafc;
+      --shadow-sheet: 0 6px 24px rgba(12, 74, 110, 0.08);
+      --shadow-toc: 0 10px 26px rgba(12, 74, 110, 0.14);
+      --shadow-pop: 0 12px 26px rgba(12, 74, 110, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+      background-color: var(--sky-tint);
+      color: var(--ink-reading);
+      line-height: 1.85;
+    }
+
+    /* Soft Rounded Top Bar */
+    .top-bar-wrap {
+      max-width: 1220px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+    }
+
+    header.site-header {
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 65%, var(--sky-accent) 100%);
+      padding: 10px 22px;
+      color: var(--paper-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
+    }
+
+    header.site-header h1 {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+
+    header.site-header a {
+      color: var(--paper-white);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header.site-header a:hover {
+      text-decoration: underline;
+    }
+
+    header.site-header img {
+      width: 38px;
+      height: 38px;
+      max-width: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: var(--paper-white);
+    }
+
+    /* Stage with centered narrow reading sheet & slightly overlapping TOC sidebar */
+    .reader-stage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
+
+    /* Slightly smaller TOC sidebar overlapping left margin of the text panel */
+    .toc-sidebar {
+      width: 18.5%;
+      min-width: 185px;
+      max-height: 54vh;
+      margin-top: 44px;
+      margin-right: -32px; /* Overlaps the left edge of .reader-sheet without reaching text */
+      position: sticky;
+      top: 96px;
+      overflow-y: auto;
+      background-color: var(--sky-wash);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      box-shadow: var(--shadow-toc);
+      z-index: 20;
+      font-size: 0.9em;
+    }
+
+    .toc-sidebar h3 {
+      font-size: 14px;
+      color: var(--sky-deep);
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--sky-primary);
+    }
+
+    .toc-sidebar ul {
+      list-style: none;
+    }
+
+    .toc-sidebar a {
+      color: var(--ink-reading);
+      text-decoration: none;
+      display: block;
+      border-radius: 5px;
+      transition: background-color 0.18s ease, color 0.18s ease;
+      line-height: 1.35;
+    }
+
+    .toc-sidebar a:hover {
+      background-color: var(--paper-white);
+      color: var(--sky-primary);
+    }
+
+    .index-title-l1 {
+      font-size: 12.5px;
+      font-weight: bold;
+      margin-top: 8px;
+      margin-bottom: 3px;
+    }
+
+    .index-title-l1 > a {
+      padding: 5px 6px;
+      color: var(--sky-deep);
+    }
+
+    .index-sub-list {
+      padding-left: 10px;
+      border-left: 2px solid var(--sky-accent);
+      margin-left: 6px;
+      margin-bottom: 6px;
+    }
+
+    .index-title-l2 {
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .index-title-l2 > a {
+      padding: 3px 6px;
+      color: var(--ink-muted);
+    }
+
+    /* Centered, compact white reading panel with generous outer proportions */
+    .reader-sheet {
+      width: 54%;
+      min-width: 320px;
+      background-color: var(--paper-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sheet);
+      padding: 38px 42px 38px 54px; /* Extra left padding clears the overlapping TOC box */
+      position: relative;
+      z-index: 10;
+    }
+
+    .chapter-header {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--sky-border);
+    }
+
+    .chapter-header h1 {
+      font-size: 24px;
+      color: var(--sky-deep);
+      letter-spacing: 1px;
+    }
+
+    .story-body p {
+      margin-bottom: 16px;
+      text-align: justify;
+      font-size: 15.5px;
+    }
+
+    /* Inline Hover Tooltips */
+    .tooltip-text {
+      position: relative;
+      display: inline-block;
+      color: var(--sky-primary);
+      cursor: pointer;
+    }
+
+    .tooltip-text:hover {
+      text-decoration: underline;
+    }
+
+    .tooltip-text .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      width: max-content;
+      max-width: 300px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-ink);
+      text-align: left;
+      padding: 8px 12px;
+      border-radius: 8px;
+
+      /* Reset inherited heading/superscript styles */
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      white-space: normal;
+
+      position: absolute;
+      z-index: 999;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      box-shadow: var(--shadow-pop);
+    }
+
+    .tooltip-text .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip-text:hover .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Footnotes Block */
+    .footnotes {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--sky-border);
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .footnotes p {
+      margin-bottom: 10px;
+    }
+
+    /* Bottom Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--sky-border);
+    }
+
+    .pagination a {
+      display: inline-block;
+      padding: 9px 18px;
+      background-color: var(--sky-tint);
+      color: var(--sky-primary);
+      border: 1px solid var(--sky-border);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .pagination a:hover {
+      background-color: var(--sky-primary);
+      color: var(--paper-white);
+      border-color: var(--sky-primary);
+    }
+
+    @media (max-width: 960px) {
+      .reader-stage {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toc-sidebar {
+        width: 100%;
+        max-height: 240px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 18px;
+        position: static;
+      }
+
+      .reader-sheet {
+        width: 100%;
+        padding: 28px 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header.site-header {
+        border-radius: 20px;
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODULE 1: SOFT ROUNDED TOP HEADER -->
+  <div class="top-bar-wrap">
+    <header class="site-header">
+      <nav>
+        <h1><a href="index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+      </nav>
+    </header>
+  </div>
+
+  <div class="reader-stage">
+
+    <!-- MODULE 2: COMPACT OVERLAPPING TABLE OF CONTENTS SIDEBAR -->
+    <aside class="toc-sidebar">
+      <h3>目录索引</h3>
+      <ul>
+	<li class="index-title-l1">
+	<a href = "preq_0_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_1.html">序奏 永夜与月之光辉</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_1_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_1_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_1_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_1_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_1_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_1_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_1_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_1_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_1_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_1_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_1_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_1_11.html>十二</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_2.html">呈示 星空之下的世界</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_2_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_2_3.html>四【存在待更新内容】</a></li>
+		<li class="index-title-l2"><a href=preq_2_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_2_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_2_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_2_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_2_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_2_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_2_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_2_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_2_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_2_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_24.html>二十五【有可能要改】</a></li>
+		<li class="index-title-l2"><a href=preq_2_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_28.html>二十九</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_3.html">发展 蔚蓝倒映出繁星</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_3_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_3_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_3_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_3_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_3_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_3_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_3_6.html>七【战斗场面即使我都已经做过减负了还是憋不出来，暂时跳过吧】</a></li>
+		<li class="index-title-l2"><a href=preq_3_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_3_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_3_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_3_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_3_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_3_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_3_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_3_15.html>十六【暂略】</a></li>
+		<li class="index-title-l2"><a href=preq_3_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_3_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_3_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_3_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_3_20.html>二十一【更新中】</a></li>
+		<li class="index-title-l2"><a href=preq_3_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_22.html>二十三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_4.html">再现 少女触及了天空</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_4_0.html>一</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_5.html">后记</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_5_2.html>三【施工中】</a></li>
+		<li class="index-title-l2"><a href=preq_5_3.html>四</a></li>
+	</ul>
+	</li>
+
+
+      </ul>
+    </aside>
+
+    <!-- MODULE 3: CENTERED READING SHEET -->
+    <main class="reader-sheet">
+
+      <!-- 3A. Chapter Title -->
+      <header class="chapter-header">
+	<h1>十六【暂略】</h1>
+
+      </header>
+
+      <!-- 3B. Chapter Paragraphs -->
+      <article class="story-body">
+	<p>不会写战斗，之后回来就行。</p>
+
+      </article>
+
+      <!-- 3C. Footnotes Block -->
+      <section class="footnotes" aria-label="注释">
+        <!-- footnotes -->
+      </section>
+
+      <!-- 3D. Chapter Navigation -->
+      <nav class="pagination" aria-label="章节翻页">
+<a href = "preq_3_14.html">&laquo; 上一段</a>
+<a href = "preq_3_16.html">下一段 &raquo;</a>
+      </nav>
+
+    </main>
+  </div>

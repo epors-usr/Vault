@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>当你迷茫时，请在世界的尽头唱响这首歌</title>
+  <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+  <style>
+    :root {
+      --sky-deep: #0c4a6e;
+      --sky-primary: #0284c7;
+      --sky-accent: #38bdf8;
+      --sky-tint: #f0f9ff;
+      --sky-wash: #e0f2fe;
+      --sky-border: #bae6fd;
+      --paper-white: #ffffff;
+      --ink-reading: #1e293b;
+      --ink-muted: #64748b;
+      --tooltip-bg: #0c4a6e;
+      --tooltip-ink: #f8fafc;
+      --shadow-sheet: 0 6px 24px rgba(12, 74, 110, 0.08);
+      --shadow-toc: 0 10px 26px rgba(12, 74, 110, 0.14);
+      --shadow-pop: 0 12px 26px rgba(12, 74, 110, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+      background-color: var(--sky-tint);
+      color: var(--ink-reading);
+      line-height: 1.85;
+    }
+
+    /* Soft Rounded Top Bar */
+    .top-bar-wrap {
+      max-width: 1220px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+    }
+
+    header.site-header {
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 65%, var(--sky-accent) 100%);
+      padding: 10px 22px;
+      color: var(--paper-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
+    }
+
+    header.site-header h1 {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+
+    header.site-header a {
+      color: var(--paper-white);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header.site-header a:hover {
+      text-decoration: underline;
+    }
+
+    header.site-header img {
+      width: 38px;
+      height: 38px;
+      max-width: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: var(--paper-white);
+    }
+
+    /* Stage with centered narrow reading sheet & slightly overlapping TOC sidebar */
+    .reader-stage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
+
+    /* Slightly smaller TOC sidebar overlapping left margin of the text panel */
+    .toc-sidebar {
+      width: 18.5%;
+      min-width: 185px;
+      max-height: 54vh;
+      margin-top: 44px;
+      margin-right: -32px; /* Overlaps the left edge of .reader-sheet without reaching text */
+      position: sticky;
+      top: 96px;
+      overflow-y: auto;
+      background-color: var(--sky-wash);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      box-shadow: var(--shadow-toc);
+      z-index: 20;
+      font-size: 0.9em;
+    }
+
+    .toc-sidebar h3 {
+      font-size: 14px;
+      color: var(--sky-deep);
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--sky-primary);
+    }
+
+    .toc-sidebar ul {
+      list-style: none;
+    }
+
+    .toc-sidebar a {
+      color: var(--ink-reading);
+      text-decoration: none;
+      display: block;
+      border-radius: 5px;
+      transition: background-color 0.18s ease, color 0.18s ease;
+      line-height: 1.35;
+    }
+
+    .toc-sidebar a:hover {
+      background-color: var(--paper-white);
+      color: var(--sky-primary);
+    }
+
+    .index-title-l1 {
+      font-size: 12.5px;
+      font-weight: bold;
+      margin-top: 8px;
+      margin-bottom: 3px;
+    }
+
+    .index-title-l1 > a {
+      padding: 5px 6px;
+      color: var(--sky-deep);
+    }
+
+    .index-sub-list {
+      padding-left: 10px;
+      border-left: 2px solid var(--sky-accent);
+      margin-left: 6px;
+      margin-bottom: 6px;
+    }
+
+    .index-title-l2 {
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .index-title-l2 > a {
+      padding: 3px 6px;
+      color: var(--ink-muted);
+    }
+
+    /* Centered, compact white reading panel with generous outer proportions */
+    .reader-sheet {
+      width: 54%;
+      min-width: 320px;
+      background-color: var(--paper-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sheet);
+      padding: 38px 42px 38px 54px; /* Extra left padding clears the overlapping TOC box */
+      position: relative;
+      z-index: 10;
+    }
+
+    .chapter-header {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--sky-border);
+    }
+
+    .chapter-header h1 {
+      font-size: 24px;
+      color: var(--sky-deep);
+      letter-spacing: 1px;
+    }
+
+    .story-body p {
+      margin-bottom: 16px;
+      text-align: justify;
+      font-size: 15.5px;
+    }
+
+    /* Inline Hover Tooltips */
+    .tooltip-text {
+      position: relative;
+      display: inline-block;
+      color: var(--sky-primary);
+      cursor: pointer;
+    }
+
+    .tooltip-text:hover {
+      text-decoration: underline;
+    }
+
+    .tooltip-text .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      width: max-content;
+      max-width: 300px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-ink);
+      text-align: left;
+      padding: 8px 12px;
+      border-radius: 8px;
+
+      /* Reset inherited heading/superscript styles */
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      white-space: normal;
+
+      position: absolute;
+      z-index: 999;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      box-shadow: var(--shadow-pop);
+    }
+
+    .tooltip-text .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip-text:hover .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Footnotes Block */
+    .footnotes {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--sky-border);
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .footnotes p {
+      margin-bottom: 10px;
+    }
+
+    /* Bottom Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--sky-border);
+    }
+
+    .pagination a {
+      display: inline-block;
+      padding: 9px 18px;
+      background-color: var(--sky-tint);
+      color: var(--sky-primary);
+      border: 1px solid var(--sky-border);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .pagination a:hover {
+      background-color: var(--sky-primary);
+      color: var(--paper-white);
+      border-color: var(--sky-primary);
+    }
+
+    @media (max-width: 960px) {
+      .reader-stage {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toc-sidebar {
+        width: 100%;
+        max-height: 240px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 18px;
+        position: static;
+      }
+
+      .reader-sheet {
+        width: 100%;
+        padding: 28px 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header.site-header {
+        border-radius: 20px;
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODULE 1: SOFT ROUNDED TOP HEADER -->
+  <div class="top-bar-wrap">
+    <header class="site-header">
+      <nav>
+        <h1><a href="index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+      </nav>
+    </header>
+  </div>
+
+  <div class="reader-stage">
+
+    <!-- MODULE 2: COMPACT OVERLAPPING TABLE OF CONTENTS SIDEBAR -->
+    <aside class="toc-sidebar">
+      <h3>目录索引</h3>
+      <ul>
+	<li class="index-title-l1">
+	<a href = "preq_0_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_1.html">序奏 永夜与月之光辉</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_1_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_1_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_1_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_1_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_1_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_1_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_1_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_1_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_1_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_1_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_1_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_1_11.html>十二</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_2.html">呈示 星空之下的世界</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_2_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_2_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_2_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_2_3.html>四【存在待更新内容】</a></li>
+		<li class="index-title-l2"><a href=preq_2_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_2_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_2_6.html>七</a></li>
+		<li class="index-title-l2"><a href=preq_2_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_2_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_2_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_2_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_2_15.html>十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_2_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_2_20.html>二十一</a></li>
+		<li class="index-title-l2"><a href=preq_2_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_2_22.html>二十三</a></li>
+		<li class="index-title-l2"><a href=preq_2_23.html>二十四</a></li>
+		<li class="index-title-l2"><a href=preq_2_24.html>二十五【有可能要改】</a></li>
+		<li class="index-title-l2"><a href=preq_2_25.html>二十六</a></li>
+		<li class="index-title-l2"><a href=preq_2_26.html>二十七</a></li>
+		<li class="index-title-l2"><a href=preq_2_27.html>二十八</a></li>
+		<li class="index-title-l2"><a href=preq_2_28.html>二十九</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_3.html">发展 蔚蓝倒映出繁星</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_3_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_3_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_3_2.html>三</a></li>
+		<li class="index-title-l2"><a href=preq_3_3.html>四</a></li>
+		<li class="index-title-l2"><a href=preq_3_4.html>五</a></li>
+		<li class="index-title-l2"><a href=preq_3_5.html>六</a></li>
+		<li class="index-title-l2"><a href=preq_3_6.html>七【战斗场面即使我都已经做过减负了还是憋不出来，暂时跳过吧】</a></li>
+		<li class="index-title-l2"><a href=preq_3_7.html>八</a></li>
+		<li class="index-title-l2"><a href=preq_3_8.html>九</a></li>
+		<li class="index-title-l2"><a href=preq_3_9.html>十</a></li>
+		<li class="index-title-l2"><a href=preq_3_10.html>十一</a></li>
+		<li class="index-title-l2"><a href=preq_3_11.html>十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_12.html>十三</a></li>
+		<li class="index-title-l2"><a href=preq_3_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_3_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_3_15.html>十六【暂略】</a></li>
+		<li class="index-title-l2"><a href=preq_3_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_3_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_3_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_3_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_3_20.html>二十一【更新中】</a></li>
+		<li class="index-title-l2"><a href=preq_3_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_22.html>二十三</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_4.html">再现 少女触及了天空</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_4_0.html>一</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_5.html">后记</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_5_2.html>三【施工中】</a></li>
+		<li class="index-title-l2"><a href=preq_5_3.html>四</a></li>
+	</ul>
+	</li>
+
+
+      </ul>
+    </aside>
+
+    <!-- MODULE 3: CENTERED READING SHEET -->
+    <main class="reader-sheet">
+
+      <!-- 3A. Chapter Title -->
+      <header class="chapter-header">
+	<h1>一</h1>
+
+      </header>
+
+      <!-- 3B. Chapter Paragraphs -->
+      <article class="story-body">
+	<p>本篇目将会把讨论重点放在谬萨在薇莉塔身上刻下的虚构术式上。下文将其称为契约。</p>
+	<p>关于契约本身，在呈示·二十九已经解释地足够清楚了。这里稍微进行补充：契约本身分为三部分，先是由谬萨打开对薇莉塔能力的限制，再将选定的记忆交给薇莉塔，最后由薇莉塔燃烧记忆以增强自身的力量。薇莉塔的能力源自愿望，即在呈示·二十一提到的，“只要愿望足够炽烈，就什么都做得到”。然而，通过等价交换的原理，可以以重要的记忆为代价强行激发薇莉塔的能力（而恰好的是，愿望和记忆息息相关，因此格外有效）。</p>
+	<p>重点如下：首先，薇莉塔燃烧的是记忆，但不需要是谬萨的记忆；其次，若薇莉塔愿望足够强烈的话，根本不需要燃烧全部记忆以激发自身的能力。而又因为薇莉塔的愿望就包括了帮助谬萨（喜爱之人），大部分时候燃烧的记忆远没有谬萨给的多。</p>
+	<p>薇莉塔则是早在呈示·二十八和呈示·二十九就明白了自身对谬萨的心意，因此才会偷偷篡改契约内容，让谬萨最终获得恢复剩余记忆的机会。因为她在篡改内容时就已经下定决心了，不会去使用任何来自谬萨的记忆。</p>
+	<p>正如在【再现·】中写道的那样，薇莉塔燃烧的自始至终都是自己的记忆。</p>
+	<p>对于已经看完的读者，应该不难发现，本作除尾声以外的每一段，都是以薇莉塔的主视角去展开的。甚至说，可以在精确一点：一直到薇莉塔为了打败「终焉」而燃尽记忆前，发生的一切都是那一瞬间的薇莉塔在回望脑海中仅剩的有关过往的记忆。也因此，才会在过往中时不时穿插谬萨的回忆——因为名为「薇莉塔」的记忆在此刻早已破败不堪了，少女为了生活的连贯性自主地将谬萨的记忆接入了那些空洞之中。</p>
+	<p>这也是为什么所有两人之间的互动从始至终都是以薇莉塔视角展开的：薇莉塔是谬萨最不想忘记的人，在再现中，他宁愿忘记自己的妹妹也不愿薇莉塔，也因此，薇莉塔从没有获得过谬萨有关自己的回忆。</p>
+	<p>事实上，薇莉塔燃烧自己记忆的选段是很有讲究的。如果谬萨给的是二人相遇之后的记忆，那么薇莉塔就会选择同一时段的记忆，并将谬萨的记忆填进空缺中（其实因为不需要烧那么多记忆，所以还是会有重合的片段，也间接导致了薇莉塔到了中后期的记忆错乱）；与之相对的，如果谬萨给的是二人相遇之前的记忆，那么薇莉塔就会燃烧仍在故乡时的记忆（需要知道的是，她在那里生活过的时间并不短——光是等着太空电梯造到穹顶就花了三年）。</p>
+	<p>值得注意的是，文中所有的加粗斜体字都是薇莉塔在回望记忆时的评价。</p>
+	<p><br></p>
+
+      </article>
+
+      <!-- 3C. Footnotes Block -->
+      <section class="footnotes" aria-label="注释">
+        <!-- footnotes -->
+      </section>
+
+      <!-- 3D. Chapter Navigation -->
+      <nav class="pagination" aria-label="章节翻页">
+<a href = "preq_5.html">&laquo; 上一段</a>
+<a href = "preq_5_1.html">下一段 &raquo;</a>
+      </nav>
+
+    </main>
+  </div>

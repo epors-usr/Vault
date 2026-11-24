@@ -1,275 +1,353 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-	当你迷茫时，请在世界的尽头唱响这首歌
-    </title>
-    <link rel="icon" type="image/x-icon" href="Khaeoz.png">
-    <style>
-        /* 全局样式与字体设置 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>当你迷茫时，请在世界的尽头唱响这首歌</title>
+  <link rel="icon" type="image/x-icon" href="Khaeoz.png">
+  <style>
+    :root {
+      --sky-deep: #0c4a6e;
+      --sky-primary: #0284c7;
+      --sky-accent: #38bdf8;
+      --sky-tint: #f0f9ff;
+      --sky-wash: #e0f2fe;
+      --sky-border: #bae6fd;
+      --paper-white: #ffffff;
+      --ink-reading: #1e293b;
+      --ink-muted: #64748b;
+      --tooltip-bg: #0c4a6e;
+      --tooltip-ink: #f8fafc;
+      --shadow-sheet: 0 6px 24px rgba(12, 74, 110, 0.08);
+      --shadow-toc: 0 10px 26px rgba(12, 74, 110, 0.14);
+      --shadow-pop: 0 12px 26px rgba(12, 74, 110, 0.22);
+    }
 
-        /* 1. 悬停文本容器 */
-        .tooltip-text {
-            position: relative;
-            display: inline-block;
-            color: #000;
-            cursor: pointer;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        .tooltip-text:hover {
-            text-decoration: underline;
-        }
+    body {
+      font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+      background-color: var(--sky-tint);
+      color: var(--ink-reading);
+      line-height: 1.85;
+    }
 
-        /* 2. 提示框样式重置 */
-        .tooltip-text .tooltip-box {
-            visibility: hidden;
-            opacity: 0;
-            
-            /* 建议：宽度不要写死 800px，改用 max-width 防止超出屏幕 */
-            width: max-content;
-            max-width: 300px; 
-            
-            background-color: #333333;    /* 背景深色 */
-            color: #ffffff;               /* 文字浅色 */
-            text-align: left;
-            padding: 8px 12px;
-            border-radius: 6px;
-            
-            /* ---- 关键重置属性（防止继承父级上标或标题样式导致文字消失） ---- */
-            font-size: 13px !important;
-            line-height: 1.5 !important;
-            font-weight: normal !important;
-            font-style: normal !important;
-            white-space: normal;          /* 允许文本正常折行 */
-            /* ------------------------------------------------------------- */
+    /* Soft Rounded Top Bar */
+    .top-bar-wrap {
+      max-width: 1220px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+    }
 
-            position: absolute;
-            z-index: 999;                 /* 提高层级，防止被其他元素遮挡 */
-            bottom: 125%;                 /* 悬浮在文字上方 */
-            left: 50%;
-            transform: translateX(-50%);
+    header.site-header {
+      background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-primary) 65%, var(--sky-accent) 100%);
+      padding: 10px 22px;
+      color: var(--paper-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
+    }
 
-            transition: opacity 0.3s, visibility 0.3s;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-        }
+    header.site-header h1 {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
 
-        /* 3. 小三角指示器 */
-        .tooltip-text .tooltip-box::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #333333 transparent transparent transparent;
-        }
+    header.site-header a {
+      color: var(--paper-white);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        /* 4. 悬停触发 */
-        .tooltip-text:hover .tooltip-box {
-            visibility: visible;
-            opacity: 1;
-        }
+    header.site-header a:hover {
+      text-decoration: underline;
+    }
 
-        header {
-            background: #2c3e50;
-            padding: 15px 20px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 1.5em;
-        }
+    header.site-header img {
+      width: 38px;
+      height: 38px;
+      max-width: 128px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: var(--paper-white);
+    }
 
-        header img {
-            width: 10%;          /* responsive percentage */
-            max-width: 200px;    /* upper limit */
-            min-width: 100px;    /* lower limit */
-            height: auto;        /* keep aspect ratio */
-            border-radius: 50%;  /* round avatar */
-            margin-top: 10px;
-        }
+    /* Stage with centered narrow reading sheet & slightly overlapping TOC sidebar */
+    .reader-stage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
 
-        nav a {
-            color: white;
-            text-decoration: none;
+    /* Slightly smaller TOC sidebar overlapping left margin of the text panel */
+    .toc-sidebar {
+      width: 18.5%;
+      min-width: 185px;
+      max-height: 54vh;
+      margin-top: 44px;
+      margin-right: -32px; /* Overlaps the left edge of .reader-sheet without reaching text */
+      position: sticky;
+      top: 96px;
+      overflow-y: auto;
+      background-color: var(--sky-wash);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      box-shadow: var(--shadow-toc);
+      z-index: 20;
+      font-size: 0.9em;
+    }
 
-        }
+    .toc-sidebar h3 {
+      font-size: 14px;
+      color: var(--sky-deep);
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--sky-primary);
+    }
 
-        nav a:hover{
-            text-decoration: underline;
-        }
+    .toc-sidebar ul {
+      list-style: none;
+    }
 
-        body {
-            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            line-height: 1.8;
-        }
+    .toc-sidebar a {
+      color: var(--ink-reading);
+      text-decoration: none;
+      display: block;
+      border-radius: 5px;
+      transition: background-color 0.18s ease, color 0.18s ease;
+      line-height: 1.35;
+    }
 
-        /* ----------------------------------------------------
-           1. 底层主内容容器 (Main Container)
-           位置：左右 30% ~ 80% (即 left: 30%, width: 50%)
-           ---------------------------------------------------- */
-        .main-container {
-            width: 55%;
-            margin-left: 30%;
-            margin-top: 40px;
-            margin-bottom: 40px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            position: relative;
-            z-index: 1; /* 保证在底层 */
-        }
+    .toc-sidebar a:hover {
+      background-color: var(--paper-white);
+      color: var(--sky-primary);
+    }
 
-        .main-container h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #222;
-        }
+    .index-title-l1 {
+      font-size: 12.5px;
+      font-weight: bold;
+      margin-top: 8px;
+      margin-bottom: 3px;
+    }
 
-        .main-container p {
-            margin-bottom: 16px;
-            text-align: justify;
-        }
+    .index-title-l1 > a {
+      padding: 5px 6px;
+      color: var(--sky-deep);
+    }
 
-        /* 底部翻页按钮样式 */
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
+    .index-sub-list {
+      padding-left: 10px;
+      border-left: 2px solid var(--sky-accent);
+      margin-left: 6px;
+      margin-bottom: 6px;
+    }
 
-        .pagination a {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #f0f2f5;
-            color: #0066cc;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: background-color 0.2s, color 0.2s;
-        }
+    .index-title-l2 {
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
 
-        .pagination a:hover {
-            background-color: #0066cc;
-            color: #ffffff;
-        }
+    .index-title-l2 > a {
+      padding: 3px 6px;
+      color: var(--ink-muted);
+    }
 
-        /* ----------------------------------------------------
-           2. 表层固定索引容器 (Fixed Overlay Index Container)
-           位置：左右 20% ~ 35% (left: 20%, width: 15%)
-                 上下 30% ~ 70% (top: 30%, height: 40vh/40%)
-           ---------------------------------------------------- */
-        .sidebar-container {
-            position: fixed;
-            top: 25%;
-            bottom: 20%; /* 相当于 height: 40vh，即上下 30% ~ 70% */
-            left: 12%;
-            width: 20%;  /* 即 35% - 20% = 15% */
-            
-            background-color: #fafafa;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            padding: 20px 15px;
-            
-            overflow-y: auto; /* 允许内部索引内容滚动 */
-            z-index: 10;     /* 保证处于表层 */
-        }
+    /* Centered, compact white reading panel with generous outer proportions */
+    .reader-sheet {
+      width: 54%;
+      min-width: 320px;
+      background-color: var(--paper-white);
+      border: 1px solid var(--sky-border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sheet);
+      padding: 38px 42px 38px 54px; /* Extra left padding clears the overlapping TOC box */
+      position: relative;
+      z-index: 10;
+    }
 
-        .sidebar-container h3 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #444;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #0066cc;
-        }
+    .chapter-header {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--sky-border);
+    }
 
-        .sidebar-container ul {
-            list-style: none;
-        }
+    .chapter-header h1 {
+      font-size: 24px;
+      color: var(--sky-deep);
+      letter-spacing: 1px;
+    }
 
-        /* 索引基础链接通用样式 */
-        .sidebar-container a {
-            color: #555;
-            text-decoration: none;
-            display: block;
-            border-radius: 4px;
-            transition: all 0.2s;
-            line-height: 1.4;
-        }
+    .story-body p {
+      margin-bottom: 16px;
+      text-align: justify;
+      font-size: 15.5px;
+    }
 
-        .sidebar-container a:hover {
-            background-color: #e6f7ff;
-            color: #0066cc;
-        }
+    /* Inline Hover Tooltips */
+    .tooltip-text {
+      position: relative;
+      display: inline-block;
+      color: var(--sky-primary);
+      cursor: pointer;
+    }
 
-        /* 大标题（一级索引）样式 */
-        .index-title-l1 {
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 4px;
-        }
+    .tooltip-text:hover {
+      text-decoration: underline;
+    }
 
-        .index-title-l1 > a {
-            padding: 6px 8px;
-            color: #222;
-        }
+    .tooltip-text .tooltip-box {
+      visibility: hidden;
+      opacity: 0;
+      width: max-content;
+      max-width: 300px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-ink);
+      text-align: left;
+      padding: 8px 12px;
+      border-radius: 8px;
 
-        /* 小标题（二级索引）列表与缩进设置 */
-        .index-sub-list {
-            padding-left: 16px; /* 控制小标题整体向右缩进 */
-            border-left: 2px solid #e8e8e8; /* 可选：加一条左侧引导线强化层级感 */
-            margin-left: 8px;
-            margin-bottom: 8px;
-        }
+      /* Reset inherited heading/superscript styles */
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      white-space: normal;
 
-        .index-title-l2 {
-            font-size: 13px;
-            margin-bottom: 2px;
-        }
+      position: absolute;
+      z-index: 999;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      box-shadow: var(--shadow-pop);
+    }
 
-        .index-title-l2 > a {
-            padding: 4px 6px;
-            color: #666;
-        }
-    </style>
+    .tooltip-text .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip-text:hover .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Footnotes Block */
+    .footnotes {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--sky-border);
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .footnotes p {
+      margin-bottom: 10px;
+    }
+
+    /* Bottom Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--sky-border);
+    }
+
+    .pagination a {
+      display: inline-block;
+      padding: 9px 18px;
+      background-color: var(--sky-tint);
+      color: var(--sky-primary);
+      border: 1px solid var(--sky-border);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .pagination a:hover {
+      background-color: var(--sky-primary);
+      color: var(--paper-white);
+      border-color: var(--sky-primary);
+    }
+
+    @media (max-width: 960px) {
+      .reader-stage {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toc-sidebar {
+        width: 100%;
+        max-height: 240px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 18px;
+        position: static;
+      }
+
+      .reader-sheet {
+        width: 100%;
+        padding: 28px 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header.site-header {
+        border-radius: 20px;
+        padding: 10px 16px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="profile"><nav>
-        <!-- Replace profile.jpg with your own image or an online link -->
-        <h1 style="color: white; text-decoration: none;"><a href = "index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
-        </nav></div>
+  <!-- MODULE 1: SOFT ROUNDED TOP HEADER -->
+  <div class="top-bar-wrap">
+    <header class="site-header">
+      <nav>
+        <h1><a href="index.html"><img src="Khaeoz.png" alt="Kh">Khaeoz_Theory</a></h1>
+      </nav>
     </header>
+  </div>
 
-    <!-- 表层固定索引容器 -->
-    <aside class="sidebar-container">
-        <h3>目录索引</h3>
-        <ul>
+  <div class="reader-stage">
+
+    <!-- MODULE 2: COMPACT OVERLAPPING TABLE OF CONTENTS SIDEBAR -->
+    <aside class="toc-sidebar">
+      <h3>目录索引</h3>
+      <ul>
 	<li class="index-title-l1">
-	<a href = "preq_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
+	<a href = "preq_0_0.html">当你迷茫时，请在世界的尽头唱响这首歌</a>
 	</li>
 
 	<li class="index-title-l1">
-	<a href = "preq_1.html">序奏 永夜与月之光辉</a>
+	<a href = "preq_0_1.html">序奏 永夜与月之光辉</a>
 	<ul class="index-sub-list">
 		<li class="index-title-l2"><a href=preq_1_0.html>一</a></li>
 		<li class="index-title-l2"><a href=preq_1_1.html>二</a></li>
@@ -287,7 +365,7 @@
 	</li>
 
 	<li class="index-title-l1">
-	<a href = "preq_2.html">呈示 星空之下的世界</a>
+	<a href = "preq_0_2.html">呈示 星空之下的世界</a>
 	<ul class="index-sub-list">
 		<li class="index-title-l2"><a href=preq_2_0.html>一</a></li>
 		<li class="index-title-l2"><a href=preq_2_1.html>二</a></li>
@@ -322,7 +400,7 @@
 	</li>
 
 	<li class="index-title-l1">
-	<a href = "preq_3.html">发展 蔚蓝倒映出繁星</a>
+	<a href = "preq_0_3.html">发展 蔚蓝倒映出繁星</a>
 	<ul class="index-sub-list">
 		<li class="index-title-l2"><a href=preq_3_0.html>一</a></li>
 		<li class="index-title-l2"><a href=preq_3_1.html>二</a></li>
@@ -336,26 +414,52 @@
 		<li class="index-title-l2"><a href=preq_3_9.html>十</a></li>
 		<li class="index-title-l2"><a href=preq_3_10.html>十一</a></li>
 		<li class="index-title-l2"><a href=preq_3_11.html>十二</a></li>
-		<li class="index-title-l2"><a href=preq_3_12.html>十三【存在待修改内容】</a></li>
+		<li class="index-title-l2"><a href=preq_3_12.html>十三</a></li>
 		<li class="index-title-l2"><a href=preq_3_13.html>十四</a></li>
+		<li class="index-title-l2"><a href=preq_3_14.html>十五</a></li>
+		<li class="index-title-l2"><a href=preq_3_15.html>十六【暂略】</a></li>
+		<li class="index-title-l2"><a href=preq_3_16.html>十七</a></li>
+		<li class="index-title-l2"><a href=preq_3_17.html>十八</a></li>
+		<li class="index-title-l2"><a href=preq_3_18.html>十九</a></li>
+		<li class="index-title-l2"><a href=preq_3_19.html>二十</a></li>
+		<li class="index-title-l2"><a href=preq_3_20.html>二十一【更新中】</a></li>
+		<li class="index-title-l2"><a href=preq_3_21.html>二十二</a></li>
+		<li class="index-title-l2"><a href=preq_3_22.html>二十三</a></li>
 	</ul>
 	</li>
 
 	<li class="index-title-l1">
-	<a href = "preq_4.html">后记</a>
+	<a href = "preq_0_4.html">再现 少女触及了天空</a>
 	<ul class="index-sub-list">
 		<li class="index-title-l2"><a href=preq_4_0.html>一</a></li>
-		<li class="index-title-l2"><a href=preq_4_1.html>二</a></li>
+	</ul>
+	</li>
+
+	<li class="index-title-l1">
+	<a href = "preq_0_5.html">后记</a>
+	<ul class="index-sub-list">
+		<li class="index-title-l2"><a href=preq_5_0.html>一</a></li>
+		<li class="index-title-l2"><a href=preq_5_1.html>二</a></li>
+		<li class="index-title-l2"><a href=preq_5_2.html>三【施工中】</a></li>
+		<li class="index-title-l2"><a href=preq_5_3.html>四</a></li>
 	</ul>
 	</li>
 
 
-        </ul>
+      </ul>
     </aside>
 
-    <!-- 底层主内容容器 -->
-    <main class="main-container">
+    <!-- MODULE 3: CENTERED READING SHEET -->
+    <main class="reader-sheet">
+
+      <!-- 3A. Chapter Title -->
+      <header class="chapter-header">
 	<h1>十五</h1>
+
+      </header>
+
+      <!-- 3B. Chapter Paragraphs -->
+      <article class="story-body">
 	<p>大海。虽说少女已经见过了海岸，但这是她第一次认识到，大海是如此地庞大，无边无际。</p>
 	<p>向着四周望去，只有海水，以及世界的尽头。只有无边无际的海水。</p>
 	<p>“薇莉塔，你在听吗？”谬萨问道。“喂？”</p>
@@ -447,12 +551,18 @@
 	<p>天秤整一个断了开来。在那之中，闪烁着金黄色的光芒。是核心。</p>
 	<p>“谬萨，接下来，就靠你了……”薇莉塔倒了下去。</p>
 
-        <!-- 底部翻页按钮 -->
-        <nav class="pagination">
+      </article>
+
+      <!-- 3C. Footnotes Block -->
+      <section class="footnotes" aria-label="注释">
+        <!-- footnotes -->
+      </section>
+
+      <!-- 3D. Chapter Navigation -->
+      <nav class="pagination" aria-label="章节翻页">
 <a href = "preq_2_13.html">&laquo; 上一段</a>
 <a href = "preq_2_15.html">下一段 &raquo;</a>
-        </nav>
-    </main>
+      </nav>
 
-</body>
-</html>
+    </main>
+  </div>
